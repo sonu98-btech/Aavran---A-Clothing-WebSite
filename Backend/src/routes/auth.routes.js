@@ -1,8 +1,8 @@
 import express from 'express';
-import { registerValidator } from '../validator/auth.validator.js';
-import { registerController } from '../controllers/auth.controller.js';
+import { registerValidator,loginValidator } from '../validator/auth.validator.js';
+import { registerController,loginController } from '../controllers/auth.controller.js';
 const authRouter  = express.Router();
 
 authRouter.post("/register",registerValidator, registerController)
-
+authRouter.post("/login",loginValidator, loginController)
 export default authRouter

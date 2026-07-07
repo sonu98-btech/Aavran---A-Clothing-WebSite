@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         default:"buyer"
     }
 })
- userSchema.pre("save",async ()=>{
+ userSchema.pre("save",async function(){
     if(!this.isModified('password'))
     return;
     const hash = await bcrypt.hash(this.password,12)

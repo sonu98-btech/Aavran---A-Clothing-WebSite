@@ -33,12 +33,8 @@ const GlobalStyles = () => (
       0%, 100% { opacity: 0.5; }
       50%       { opacity: 1; }
     }
-    @keyframes spinSlow {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
 
-    .card-enter { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+    .card-enter  { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both; }
     .brand-enter { animation: fadeIn 1.2s ease both; }
     .float-anim  { animation: float 6s ease-in-out infinite; }
 
@@ -52,10 +48,10 @@ const GlobalStyles = () => (
     }
 
     .glass-card {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255,255,255,0.06);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255,255,255,0.12);
     }
 
     .glass-input {
@@ -95,17 +91,6 @@ const GlobalStyles = () => (
       background: rgba(201,162,39,0.08);
     }
 
-    .seller-toggle {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      transition: all 0.25s ease;
-      cursor: pointer;
-    }
-    .seller-toggle:hover {
-      border-color: rgba(201,162,39,0.5);
-      background: rgba(201,162,39,0.07);
-    }
-
     .label-text {
       font-family: 'Inter', sans-serif;
       font-size: 9px;
@@ -118,11 +103,6 @@ const GlobalStyles = () => (
     .decorative-line {
       background: linear-gradient(90deg, transparent, rgba(201,162,39,0.6), transparent);
     }
-
-    /* Scrollbar styling for the form panel */
-    .form-scroll::-webkit-scrollbar { width: 4px; }
-    .form-scroll::-webkit-scrollbar-track { background: transparent; }
-    .form-scroll::-webkit-scrollbar-thumb { background: rgba(201,162,39,0.3); border-radius: 4px; }
   `}</style>
 );
 
@@ -134,21 +114,9 @@ const DiamondIcon = ({ size = 18 }) => (
   </svg>
 );
 
-const UserIcon = () => (
-  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-  </svg>
-);
-
 const MailIcon = () => (
   <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
-  </svg>
-);
-
-const PhoneIcon = () => (
-  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/>
   </svg>
 );
 
@@ -180,26 +148,11 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const StoreIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016 2.993 2.993 0 0 0 2.25-1.016 3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72"/>
+/* ─── Shield Icon (for left panel) ─── */
+const ShieldIcon = () => (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
   </svg>
-);
-
-/* ─── Decorative Ring ─── */
-const DecorativeRing = ({ size, opacity, delay }) => (
-  <div
-    className="absolute rounded-full pointer-events-none border"
-    style={{
-      width: size,
-      height: size,
-      borderColor: `rgba(201,162,39,${opacity})`,
-      animation: `pulse-ring 4s ease-in-out ${delay}s infinite`,
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-    }}
-  />
 );
 
 /* ─── Glass Input ─── */
@@ -218,7 +171,7 @@ const GlassInput = ({ id, label, type = "text", icon, value, onChange, placehold
         onChange={onChange}
         placeholder={placeholder}
         autoComplete="off"
-        className="glass-input w-full pl-10 pr-10 py-2.5 text-sm rounded-lg font-inter"
+        className="glass-input w-full pl-10 pr-10 py-2.5 text-sm rounded-lg"
         style={{ fontFamily: "Inter, sans-serif", fontSize: "13px" }}
       />
       {rightEl && <span className="absolute right-3.5 z-10">{rightEl}</span>}
@@ -227,31 +180,28 @@ const GlassInput = ({ id, label, type = "text", icon, value, onChange, placehold
 );
 import { useNavigate } from "react-router";
 /* ─── Main ─── */
-const Register = () => {
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", password: "", isSeller: false });
+const Login = () => {
+  const [form, setForm]     = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // ── Redux state ──
   const loading = useSelector((state) => state.auth.loading);
   const error   = useSelector((state) => state.auth.error);
-  const { registerHandler } = useAuth();
-  const navigate = useNavigate();
-  useEffect(() => { setMounted(true); }, []);
+  const { loginHandler } = useAuth();
 
+  useEffect(() => { setMounted(true); }, []);
+  const navigate = useNavigate();
   const handle = (f) => (e) => setForm(p => ({ ...p, [f]: e.target.value }));
+
   const submit = async (e) => {
     e.preventDefault();
-    await registerHandler({
-      fullname: form.fullName,
+    await loginHandler({
       email:    form.email,
-      contact:  form.phone,
       password: form.password,
-      isSeller: form.isSeller,
     });
     navigate("/")
   };
-
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center"
@@ -269,9 +219,9 @@ const Register = () => {
         />
         {/* Gradient overlays */}
         <div className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, rgba(10,10,20,0.85) 0%, rgba(10,10,20,0.5) 50%, rgba(10,10,20,0.9) 100%)" }} />
+          style={{ background: "linear-gradient(135deg, rgba(10,10,20,0.9) 0%, rgba(10,10,20,0.5) 50%, rgba(10,10,20,0.85) 100%)" }} />
         <div className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse 80% 60% at 70% 50%, rgba(201,162,39,0.06) 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(ellipse 80% 60% at 30% 50%, rgba(201,162,39,0.06) 0%, transparent 70%)" }} />
       </div>
 
       {/* ── Decorative watermark ── */}
@@ -319,46 +269,45 @@ const Register = () => {
           <span className="text-amber-400/80 text-[9px] font-bold tracking-[0.18em] uppercase"
             style={{ fontFamily: "Inter, sans-serif" }}>SS 2025 Collection</span>
         </div>
-        {/* Sign In link */}
-        <a href="/login" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
+        {/* Register link */}
+        <a href="/register" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
           style={{ fontFamily: "Inter, sans-serif" }}>
-          Sign In
+          Register
         </a>
       </div>
 
-      {/* ── Main layout: Left stats + Right form ── */}
+      {/* ── Main layout: Left storytelling + Right form ── */}
       <div className={`relative z-10 w-full max-w-6xl px-4 sm:px-8 lg:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 py-24 ${mounted ? "brand-enter" : "opacity-0"}`}>
 
         {/* ── Left: Brand storytelling ── */}
         <div className="flex-1 text-center lg:text-left space-y-8 hidden lg:block">
-          {/* Headline */}
           <div className="space-y-3">
             <div className="decorative-line h-px w-16 mb-6 hidden lg:block" />
             <p className="text-amber-400/70 text-[10px] font-bold tracking-[0.3em] uppercase"
               style={{ fontFamily: "Inter, sans-serif" }}>
-              Luxury Fashion Marketplace
+              Welcome Back
             </p>
             <h1
               className="text-5xl xl:text-6xl font-light leading-[1.08] text-white"
               style={{ fontFamily: "Cormorant Garamond, Georgia, serif" }}
             >
-              Where Style<br />
+              Your Style,<br />
               <span className="shimmer-text font-bold italic">
-                Meets Excellence
+                Awaits You
               </span>
             </h1>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mt-4"
               style={{ fontFamily: "Inter, sans-serif" }}>
-              Curated collections for the modern wardrobe. Minimal. Timeless. Effortlessly yours.
+              Sign in to continue your curated luxury experience. Your wardrobe is one step away.
             </p>
           </div>
 
-          {/* Stats */}
+          {/* Trust badges */}
           <div className="grid grid-cols-3 gap-4 max-w-sm">
             {[
-              { n: "50K+", l: "Members" },
-              { n: "500+", l: "Brands" },
-              { n: "4.9★", l: "Rating" },
+              { n: "256-bit", l: "Encryption" },
+              { n: "99.9%",   l: "Uptime" },
+              { n: "24/7",    l: "Support" },
             ].map(({ n, l }) => (
               <div key={l} className="glass-card rounded-xl p-4 text-center">
                 <p className="shimmer-text text-2xl font-black"
@@ -372,9 +321,9 @@ const Register = () => {
           {/* Feature bullets */}
           <div className="space-y-3">
             {[
-              "Verified seller onboarding",
-              "Secure escrow payments",
-              "Global shipping network",
+              "End-to-end encrypted sessions",
+              "Instant order tracking dashboard",
+              "Exclusive member-only drops",
             ].map((feat) => (
               <div key={feat} className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
@@ -385,7 +334,7 @@ const Register = () => {
           </div>
         </div>
 
-        {/* ── Right: Registration form card ── */}
+        {/* ── Right: Login form card ── */}
         <div
           className={`w-full max-w-[420px] flex-shrink-0 ${mounted ? "card-enter" : "opacity-0"}`}
           style={{ animationDelay: "0.15s" }}
@@ -413,15 +362,15 @@ const Register = () => {
                   style={{ fontFamily: "Inter, sans-serif" }}>AAVRAN</span>
               </div>
 
-              <p className="label-text mb-1.5">Create Account</p>
+              <p className="label-text mb-1.5">Welcome Back</p>
               <h2 className="text-white text-2xl font-bold leading-snug"
                 style={{ fontFamily: "Inter, sans-serif" }}>
-                Join the Aavran<br />
-                <span className="shimmer-text">Community</span>
+                Sign in to<br />
+                <span className="shimmer-text">Your Account</span>
               </h2>
               <p className="text-white/35 text-xs mt-1.5 leading-relaxed"
                 style={{ fontFamily: "Inter, sans-serif" }}>
-                Thousands of buyers &amp; sellers trust Aavran.
+                Access your curated collections &amp; orders.
               </p>
             </div>
 
@@ -443,6 +392,7 @@ const Register = () => {
 
             {/* Form */}
             <form onSubmit={submit} noValidate className="space-y-3.5">
+
               {/* ── Redux error banner ── */}
               {error && (
                 <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs"
@@ -454,14 +404,11 @@ const Register = () => {
                 </div>
               )}
 
-              <GlassInput id="name" label="Full Name" placeholder="Jane Doe"
-                icon={<UserIcon />} value={form.fullName} onChange={handle("fullName")} />
-              <GlassInput id="email" label="Email Address" type="email" placeholder="jane@aavran.com"
+              <GlassInput id="login-email" label="Email Address" type="email" placeholder="jane@aavran.com"
                 icon={<MailIcon />} value={form.email} onChange={handle("email")} />
-              <GlassInput id="phone" label="Contact Number" type="tel" placeholder="+91 98765 43210"
-                icon={<PhoneIcon />} value={form.phone} onChange={handle("phone")} />
-              <GlassInput id="password" label="Password" type={showPw ? "text" : "password"}
-                placeholder="Min. 8 characters" icon={<LockIcon />}
+
+              <GlassInput id="login-password" label="Password" type={showPw ? "text" : "password"}
+                placeholder="Your password" icon={<LockIcon />}
                 value={form.password} onChange={handle("password")}
                 rightEl={
                   <button type="button" onClick={() => setShowPw(v => !v)}
@@ -470,25 +417,13 @@ const Register = () => {
                   </button>
                 } />
 
-              {/* Seller toggle */}
-              <div className="seller-toggle rounded-lg p-3.5 flex items-center justify-between"
-                onClick={() => setForm(p => ({ ...p, isSeller: !p.isSeller }))}>
-                <div className="flex items-center gap-3">
-                  <span className="text-amber-400/60"><StoreIcon /></span>
-                  <div>
-                    <p className="text-white text-xs font-semibold"
-                      style={{ fontFamily: "Inter, sans-serif" }}>Register as Seller</p>
-                    <p className="text-white/30 text-[10px]"
-                      style={{ fontFamily: "Inter, sans-serif" }}>List & manage your collections</p>
-                  </div>
-                </div>
-                {/* Toggle switch */}
-                <button type="button" role="switch" aria-checked={form.isSeller}
-                  onClick={e => { e.stopPropagation(); setForm(p => ({ ...p, isSeller: !p.isSeller })); }}
-                  className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-300 focus:outline-none"
-                  style={{ background: form.isSeller ? "#c9a227" : "rgba(255,255,255,0.12)" }}>
-                  <span className={`inline-block h-4 w-4 rounded-full bg-white shadow-lg transform transition-transform duration-300 ${form.isSeller ? "translate-x-4" : "translate-x-0.5"}`} />
-                </button>
+              {/* Forgot password */}
+              <div className="flex justify-end">
+                <a href="/forgot-password"
+                  className="text-[11px] font-semibold hover:underline underline-offset-2 transition-colors"
+                  style={{ color: "rgba(201,162,39,0.7)", fontFamily: "Inter, sans-serif" }}>
+                  Forgot password?
+                </a>
               </div>
 
               {/* Submit */}
@@ -502,27 +437,25 @@ const Register = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4Z"/>
                     </svg>
-                    CREATING…
+                    SIGNING IN…
                   </>
-                ) : "CREATE ACCOUNT"}
+                ) : "SIGN IN"}
               </button>
             </form>
 
             {/* Footer links */}
             <p className="mt-5 text-center text-[11px] text-white/30"
               style={{ fontFamily: "Inter, sans-serif" }}>
-              Already have an account?{" "}
-              <a href="/login"
+              Don&apos;t have an account?{" "}
+              <a href="/register"
                 className="font-bold hover:underline underline-offset-2 transition-colors"
                 style={{ color: "#c9a227" }}>
-                Sign In
+                Create one
               </a>
             </p>
-            <p className="mt-3 text-center text-[10px] text-white/18 leading-relaxed"
+            <p className="mt-3 text-center text-[10px] leading-relaxed"
               style={{ color: "rgba(255,255,255,0.2)", fontFamily: "Inter, sans-serif" }}>
-              By registering you agree to our{" "}
-              <a href="/terms" className="underline hover:text-amber-400/70 transition-colors">Terms</a>
-              {" "}&amp;{" "}
+              Protected by 256-bit SSL encryption.{" "}
               <a href="/privacy" className="underline hover:text-amber-400/70 transition-colors">Privacy Policy</a>.
             </p>
 
@@ -544,4 +477,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

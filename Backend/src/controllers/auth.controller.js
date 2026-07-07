@@ -11,7 +11,7 @@ async function sendTokenResponse(user,res,message){
     })
     res.cookie("token",token)
 
-    res.status(200).json({
+    return res.status(200).json({
         success:true,
         message:message,
         user:{
@@ -41,6 +41,20 @@ export const registerController = async(req,res)=>{
         fullname,
         role:isSeller?"seller":"buyer"
     })
+    console.log("user : ", user)
 
     await sendTokenResponse(user,res,"user registered successfully")
+}
+
+export const loginController = async(req,res)=>{
+    const {email,password} = req.body;
+    const user = await userModel.findOne({email:email})
+    if(!user){
+        return res.status(400).json({message:"User not found"})
+    }
+    const isMatch = await user.comparePassword(password)
+    if(!isMatch){
+        return res.status(400).json({message:"Invalid credentials"})
+    }
+    await sendTokenResponse(user,res,"user logged in successfully")
 }

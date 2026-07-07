@@ -15,3 +15,8 @@ export const registerValidator = [
     body('isSeller').isBoolean().withMessage("isSeller must be a boolean value"),
     validate
 ]
+export const loginValidator = [
+    body('email').isEmail().withMessage("Please enter a valid email"),
+    body('password').notEmpty().withMessage("Password is required"),
+    validate
+]
