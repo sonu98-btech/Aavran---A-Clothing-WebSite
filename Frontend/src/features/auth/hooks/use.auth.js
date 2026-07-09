@@ -13,6 +13,7 @@ export const useAuth = ()=>{
             dispatch(setError(null));
         }catch(error){
             dispatch(setError(error?.response?.data?.message || "Registration failed"));
+            throw error;
         }finally{
             dispatch(setLoading(false));
         }
@@ -26,6 +27,8 @@ export const useAuth = ()=>{
             dispatch(setError(null));
         }catch(error){
             dispatch(setError(error?.response?.data?.message || "Login failed"));
+            throw error;
+            
         }finally{
             dispatch(setLoading(false));
         }
@@ -36,4 +39,4 @@ export const useAuth = ()=>{
         loginHandler,
     }
 
-}
+}

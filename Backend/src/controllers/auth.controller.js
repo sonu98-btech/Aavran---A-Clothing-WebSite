@@ -58,3 +58,24 @@ export const loginController = async(req,res)=>{
     }
     await sendTokenResponse(user,res,"user logged in successfully")
 }
+
+export const googleAuthCallbackController = async (req, res) => {
+    const {id, displayName, emails} = req.user;
+    const email = emails[0].value;
+    let user = await userModel.findOne({email: email});
+    if (!user) {
+        user = await userModel.create({
+            email: email,
+            fullname: displayName,
+            googleId: id,
+        });
+    }
+        const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+            expiresIn: 1 * 24 * 60 * 60, // 1 day
+        });
+        res.cookie("token", token);
+    
+
+    
+    res.redirect("http://localhost:5173/");
+}
