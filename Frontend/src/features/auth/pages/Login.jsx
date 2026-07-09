@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAuth } from "../hooks/use.auth.js";
+import ThemeToggle from "../../../app/ThemeToggle.jsx";
 
 /* ─── Google Fonts + Animations ─── */
 const GlobalStyles = () => (
@@ -202,9 +203,9 @@ const Login = () => {
         email: form.email,
         password: form.password,
       });
-      
-        navigate("/");
-    
+
+      navigate("/");
+
     } catch (err) {
       console.error("Login error:", err);
     }
@@ -276,11 +277,14 @@ const Login = () => {
           <span className="text-amber-400/80 text-[9px] font-bold tracking-[0.18em] uppercase"
             style={{ fontFamily: "Inter, sans-serif" }}>SS 2025 Collection</span>
         </div>
-        {/* Register link */}
-        <a href="/register" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
-          style={{ fontFamily: "Inter, sans-serif" }}>
-          Register
-        </a>
+        {/* Register link + Theme toggle */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <ThemeToggle />
+          <a href="/register" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
+            style={{ fontFamily: "Inter, sans-serif" }}>
+            Register
+          </a>
+        </div>
       </div>
 
       {/* ── Main layout: Left storytelling + Right form ── */}

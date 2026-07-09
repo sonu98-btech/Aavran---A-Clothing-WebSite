@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAuth } from "../hooks/use.auth.js";
+import ThemeToggle from "../../../app/ThemeToggle.jsx";
 
 /* ─── Google Fonts + Animations ─── */
 const GlobalStyles = () => (
@@ -220,7 +221,7 @@ const GlassInput = ({ id, label, type = "text", icon, value, onChange, placehold
 );
 import ContinueWithGoogle from "../components/ContinueWithGoogle.jsx";
 import { useNavigate } from "react-router";
-import { setLoading,setError} from "../state/auth.slice.js";
+import { setLoading, setError } from "../state/auth.slice.js";
 import { useDispatch } from "react-redux";
 /* ─── Main ─── */
 const Register = () => {
@@ -240,18 +241,18 @@ const Register = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-     await registerHandler({
+      await registerHandler({
         fullname: form.fullName,
         email: form.email,
         contact: form.phone,
         password: form.password,
         isSeller: form.isSeller,
-    });
-       navigate("/");
-}catch(err) {
-    console.log("error",err)
-}
-};
+      });
+      navigate("/");
+    } catch (err) {
+      console.log("error", err)
+    }
+  };
 
 
   return (
@@ -320,11 +321,14 @@ const Register = () => {
           <span className="text-amber-400/80 text-[9px] font-bold tracking-[0.18em] uppercase"
             style={{ fontFamily: "Inter, sans-serif" }}>SS 2025 Collection</span>
         </div>
-        {/* Sign In link */}
-        <a href="/login" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
-          style={{ fontFamily: "Inter, sans-serif" }}>
-          Sign In
-        </a>
+        {/* Sign In link + Theme toggle */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <ThemeToggle />
+          <a href="/login" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
+            style={{ fontFamily: "Inter, sans-serif" }}>
+            Sign In
+          </a>
+        </div>
       </div>
 
       {/* ── Main layout: Left stats + Right form ── */}

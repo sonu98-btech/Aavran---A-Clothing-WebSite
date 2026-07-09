@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useProduct } from "../hooks/use.product.";
 import { setProducts } from "../state/product.slice";
+import ThemeToggle from "../../../app/ThemeToggle.jsx";
 
 /* ─── Inline Styles (matches Login/Register aesthetic) ─── */
 const GlobalStyles = () => (
@@ -346,14 +347,17 @@ const CreateProduct = () => {
           </span>
         </div>
 
-        {/* Cancel link */}
-        <a href="/"
-          className="flex items-center gap-1.5 text-white/40 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors">
-          Cancel
-          <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </a>
+        {/* Toggle + Cancel */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <ThemeToggle />
+          <a href="/"
+            className="flex items-center gap-1.5 text-white/40 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors">
+            Cancel
+            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </a>
+        </div>
       </header>
 
       {/* ── Main content ── */}
