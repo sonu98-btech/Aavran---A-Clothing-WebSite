@@ -407,3 +407,96 @@
   border-color: #8B6914 !important;
   color: #8B6914 !important;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   14. SELLER DASHBOARD — Theme Overrides
+   ════════════════════════════════════════════════════════════════ */
+
+/* Dark mode — dashboard header & sidebar (solid backgrounds) */
+[data-theme="dark"] header {
+  background: #0e0e16 !important;
+  border-bottom-color: rgba(255,255,255,0.08) !important;
+}
+[data-theme="dark"] aside {
+  background: #0e0e16 !important;
+  border-right-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Light mode — dashboard header & sidebar */
+[data-theme="light"] header {
+  background: #f5f0e4 !important;
+  border-bottom-color: rgba(201,162,39,0.22) !important;
+}
+[data-theme="light"] aside {
+  background: #f5f0e4 !important;
+  border-right-color: rgba(201,162,39,0.18) !important;
+}
+
+/* Light mode — dashboard glass cards (glass-card-dark in light mode) */
+[data-theme="light"] .glass-card-dark {
+  background: rgba(255,255,255,0.82) !important;
+  border-color: rgba(201,162,39,0.18) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] .glass-card-dark:hover {
+  border-color: rgba(201,162,39,0.5) !important;
+}
+
+/* Dark mode — nav items use correct colors */
+[data-theme="dark"] .nav-item-dark { color: rgba(255,255,255,0.45); }
+[data-theme="dark"] .nav-item-dark:hover { color: rgba(255,255,255,0.9); background: rgba(201,162,39,0.08); }
+[data-theme="dark"] .nav-item-dark.active { color: #c9a227; background: rgba(201,162,39,0.12); }
+
+/* Light mode — nav items */
+[data-theme="light"] .nav-item-dark { color: rgba(10,10,15,0.45) !important; background: transparent !important; }
+[data-theme="light"] .nav-item-dark:hover { color: #0a0a0f !important; background: rgba(201,162,39,0.08) !important; }
+[data-theme="light"] .nav-item-dark.active { color: #8B6914 !important; background: rgba(201,162,39,0.14) !important; }
+
+/* ════════════════════════════════════════════════════════════════
+   15. CREATE PRODUCT PAGE — Light Mode Overrides
+   ════════════════════════════════════════════════════════════════ */
+
+/* Page background */
+[data-theme="light"] .relative.min-h-screen.w-full {
+  background: #f8f5ee !important;
+}
+
+/* Header — warm ivory */
+[data-theme="light"] header {
+  background: rgba(245,240,228,0.95) !important;
+  border-bottom-color: rgba(201,162,39,0.15) !important;
+}
+
+/* Brand text */
+[data-theme="light"] header .text-white { color: #1C1408 !important; }
+[data-theme="light"] header .text-white\/40 { color: #5A4520 !important; }
+[data-theme="light"] header .hover\:text-amber-400:hover { color: #8B6914 !important; }
+
+/* Glass card on create product page */
+[data-theme="light"] .cp-card {
+  background: rgba(255,255,255,0.88) !important;
+  border-color: rgba(201,162,39,0.18) !important;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.1) !important;
+}
+
+/* Card text */
+[data-theme="light"] .cp-card h2 { color: #1C1408 !important; }
+[data-theme="light"] .cp-card p.text-white\/30 { color: #9A8060 !important; }
+[data-theme="light"] .cp-card .text-white { color: #1C1408 !important; }
+[data-theme="light"] .cp-card .text-white\/80 { color: #2C1E08 !important; }
+[data-theme="light"] .cp-card .text-white\/40 { color: #7A6040 !important; }
+[data-theme="light"] .cp-card .text-white\/25 { color: #A89070 !important; }
+
+/* Left panel text */
+[data-theme="light"] h1.text-white { color: #1C1408 !important; }
+[data-theme="light"] .cp-left-panel .text-white\/40 { color: #7A6040 !important; }
+[data-theme="light"] .cp-left-panel .text-white\/80 { color: #2C1E08 !important; }
+
+/* Watermark */
+[data-theme="light"] .watermark-text { color: rgba(139,105,20,0.04) !important; }
+
+/* Footer */
+[data-theme="light"] footer .text-white\/20 { color: rgba(139,105,20,0.3) !important; }
+
+/* Price prefix ₹ */
+[data-theme="light"] .cp-price-prefix { color: #7A6040 !important; }
