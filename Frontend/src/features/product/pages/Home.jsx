@@ -159,7 +159,7 @@ const GlobalStyles = () => (
     }
     .hm-card-img-box img {
       width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform 700ms cubic-bezier(0.165,0.84,0.44,1);
+      transition: transform 1200ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
     }
     .hm-card:hover .hm-card-img-box img {
       transform: scale(1.05);
@@ -302,6 +302,9 @@ const GlobalStyles = () => (
         linear-gradient(to right, rgba(247,244,238,0.5) 0%, transparent 45%),
         linear-gradient(to top, rgba(247,244,238,0.4) 0%, transparent 55%) !important;
     }
+    [data-theme="light"] .hm-hero-img:hover img {
+      transform: none !important;
+    }
     [data-theme="light"] .hm-btn-ghost {
       border-color: rgba(28,20,8,0.24) !important; color: #3a2e10 !important;
     }
@@ -344,6 +347,9 @@ const GlobalStyles = () => (
       box-shadow: 0 14px 40px rgba(0,0,0,0.12), 0 10px 30px -10px rgba(139,105,20,0.2) !important;
     }
     [data-theme="light"] .hm-card-img-box { background: #f0ece4 !important; }
+    [data-theme="light"] .hm-card-img-box img {
+      transition: transform 1200ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease !important;
+    }
     [data-theme="light"] .hm-card-title   { color: #1c1408 !important; }
     [data-theme="light"] .hm-card-price   { color: #8b6914 !important; }
     [data-theme="light"] .hm-card-desc    { color: rgba(28,20,8,0.5) !important; }
@@ -433,10 +439,10 @@ const BoxIcon = ({ size = 44 }) => (
    PRODUCT CARD  — exact Stitch MCP glass-card implementation
 ════════════════════════════════════════════════════ */
 const ProductCard = ({ product, index }) => {
-  const [imgErr, setImgErr]       = useState(false);
+  const [imgErr, setImgErr] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const imageUrl = product.images?.[0]?.url;
-  const price    = product.price?.amount ?? 0;
+  const price = product.price?.amount ?? 0;
 
   return (
     <div
@@ -462,7 +468,7 @@ const ProductCard = ({ product, index }) => {
           <img
             src={imageUrl}
             alt={product.title}
-            style={{ opacity: imgLoaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
+            style={{ opacity: imgLoaded ? 1 : 0 }}
             onLoad={() => setImgLoaded(true)}
             onError={() => setImgErr(true)}
           />
