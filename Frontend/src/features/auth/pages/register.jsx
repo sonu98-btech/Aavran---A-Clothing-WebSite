@@ -232,9 +232,9 @@ const Register = () => {
   // ── Redux state ──
   const loading = useSelector((state) => state.auth.loading);
   const error = useSelector((state) => state.auth.error);
+  const user = useSelector((state) => state.auth.user);
   const { registerHandler } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   useEffect(() => { setMounted(true); }, []);
 
   const handle = (f) => (e) => setForm(p => ({ ...p, [f]: e.target.value }));
@@ -248,7 +248,12 @@ const Register = () => {
         password: form.password,
         isSeller: form.isSeller,
       });
+      if(user.role=="buyer"){
       navigate("/");
+      }
+      else{
+        navigate("/seller/dashboard")
+      }
     } catch (err) {
       console.log("error", err)
     }

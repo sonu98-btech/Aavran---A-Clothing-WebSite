@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useProduct } from "../hooks/use.product.";
-import { setProducts } from "../state/product.slice";
+import { useProduct } from "../hooks/use.product.js";
+import { setSellerProducts } from "../state/product.slice";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
 
 /* ─── Keyframe animations (minimal, scoped) ─── */
@@ -161,7 +161,7 @@ const Field = ({ id, label, children }) => (
 /* ─── Main Component ─── */
 const CreateProduct = () => {
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.product.products);
+  const sellerProducts = useSelector((state) => state.product.sellerProducts);
   const { handleCreateProduct } = useProduct();
 
   const [navOpen, setNavOpen] = useState(false);
@@ -205,7 +205,7 @@ const CreateProduct = () => {
       fd.append("priceCurrency", form.priceCurrency);
       images.forEach(({ file }) => fd.append("images", file));
       const newProduct = await handleCreateProduct(fd);
-      if (newProduct) dispatch(setProducts([...products, newProduct]));
+      if (newProduct) dispatch(setSellerProducts([...sellerProducts, newProduct]));
       setSuccess(true);
       setForm({ title: "", description: "", priceAmount: "", priceCurrency: "INR" });
       images.forEach(({ preview }) => URL.revokeObjectURL(preview));
@@ -246,9 +246,9 @@ const CreateProduct = () => {
           <span className="
             text-[22vw] font-black tracking-[0.22em] uppercase leading-none
           " style={{
-            fontFamily: "Cormorant Garamond, Georgia, serif",
-            color: "rgba(201,162,39,0.03)"
-          }}>
+              fontFamily: "Cormorant Garamond, Georgia, serif",
+              color: "rgba(201,162,39,0.03)"
+            }}>
             AAVRAN
           </span>
         </div>

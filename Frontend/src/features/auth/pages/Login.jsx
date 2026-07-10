@@ -190,6 +190,7 @@ const Login = () => {
   // ── Redux state ──
   const loading = useSelector((state) => state.auth.loading);
   const error = useSelector((state) => state.auth.error);
+  const user = useSelector((state)=>state.auth.user)
   const { loginHandler } = useAuth();
 
   useEffect(() => { setMounted(true); }, []);
@@ -203,8 +204,12 @@ const Login = () => {
         email: form.email,
         password: form.password,
       });
-
+      if(user.role=="buyer"){
       navigate("/");
+      }
+      else{
+        navigate("/seller/dashboard")
+      }
 
     } catch (err) {
       console.error("Login error:", err);

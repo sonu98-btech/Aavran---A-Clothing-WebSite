@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useProduct } from '../hooks/use.product.';
+import { useProduct } from '../hooks/use.product';
 import { useNavigate } from 'react-router';
 import { useTheme } from '../../../app/ThemeContext';
 
@@ -344,14 +344,14 @@ const Dashboard = () => {
   const { theme, toggleTheme } = useTheme();
   const dark = theme === 'dark';
   const { handleGetSellerProducts } = useProduct();
-  const products = useSelector((state) => state.product.products);
+  const sellerProducts = useSelector((state) => state.product.sellerProducts);
   const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => { handleGetSellerProducts(); }, []);
 
-  const productList = Array.isArray(products) ? products : [];
+  const productList = Array.isArray(sellerProducts) ? sellerProducts : [];
   const revenue = calcRevenue(productList);
   const thisMonth = productList.filter((p) => {
     const d = new Date(p.createdAt), now = new Date();
@@ -359,18 +359,18 @@ const Dashboard = () => {
   }).length;
 
   /* ── Theme tokens ─────────────────────────────────────────── */
-  const bg          = dark ? '#0a0a0f'                    : '#f8f5ee';
-  const sidebarBg   = dark ? '#0e0e16'                    : '#f5f0e4';
-  const sidebarBdr  = dark ? 'rgba(255,255,255,0.07)'     : 'rgba(201,162,39,0.18)';
-  const headerBg    = dark ? '#0e0e16'                    : '#f5f0e4';
-  const headerBdr   = dark ? 'rgba(255,255,255,0.08)'     : 'rgba(201,162,39,0.22)';
-  const textPrimary = dark ? '#fff'                       : '#0a0a0f';
-  const textMuted   = dark ? 'rgba(255,255,255,0.35)'     : 'rgba(10,10,15,0.45)';
-  const iconBase    = dark ? 'rgba(255,255,255,0.22)'     : 'rgba(10,10,15,0.22)';
-  const emptyBg     = dark ? 'rgba(255,255,255,0.03)'     : 'rgba(255,255,255,0.7)';
-  const emptyBdr    = dark ? 'rgba(255,255,255,0.08)'     : 'rgba(201,162,39,0.2)';
+  const bg = dark ? '#0a0a0f' : '#f8f5ee';
+  const sidebarBg = dark ? '#0e0e16' : '#f5f0e4';
+  const sidebarBdr = dark ? 'rgba(255,255,255,0.07)' : 'rgba(201,162,39,0.18)';
+  const headerBg = dark ? '#0e0e16' : '#f5f0e4';
+  const headerBdr = dark ? 'rgba(255,255,255,0.08)' : 'rgba(201,162,39,0.22)';
+  const textPrimary = dark ? '#fff' : '#0a0a0f';
+  const textMuted = dark ? 'rgba(255,255,255,0.35)' : 'rgba(10,10,15,0.45)';
+  const iconBase = dark ? 'rgba(255,255,255,0.22)' : 'rgba(10,10,15,0.22)';
+  const emptyBg = dark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)';
+  const emptyBdr = dark ? 'rgba(255,255,255,0.08)' : 'rgba(201,162,39,0.2)';
 
-  const navClass    = dark ? 'nav-item-dark' : 'nav-item-light';
+  const navClass = dark ? 'nav-item-dark' : 'nav-item-light';
 
   return (
     <>
@@ -404,13 +404,13 @@ const Dashboard = () => {
         {/* ── Sidebar (Collapsible Mobile Drawer / Sticky Desktop Panel) ── */}
         {/* Overlay backdrop for mobile when open */}
         {sidebarOpen && (
-          <div 
+          <div
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"
           />
         )}
 
-        <aside 
+        <aside
           className={`
             fixed inset-y-0 left-0 lg:sticky lg:top-0 z-40 lg:z-20
             w-[252px] h-screen flex flex-col flex-shrink-0
@@ -443,7 +443,7 @@ const Dashboard = () => {
                 </p>
               </div>
               {/* Close sidebar button on mobile */}
-              <button 
+              <button
                 onClick={() => setSidebarOpen(false)}
                 className="lg:hidden p-1 text-amber-500 hover:bg-white/5 rounded"
               >
@@ -460,10 +460,10 @@ const Dashboard = () => {
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               {[
                 { key: 'dashboard', label: 'Dashboard', active: true },
-                { key: 'inventory', label: 'Inventory',  active: false },
-                { key: 'orders',    label: 'Orders',     active: false },
-                { key: 'analytics', label: 'Analytics',  active: false },
-                { key: 'settings',  label: 'Settings',   active: false },
+                { key: 'inventory', label: 'Inventory', active: false },
+                { key: 'orders', label: 'Orders', active: false },
+                { key: 'analytics', label: 'Analytics', active: false },
+                { key: 'settings', label: 'Settings', active: false },
               ].map(({ key, label, active }) => (
                 <button key={key}
                   className={`${navClass}${active ? ' active' : ''}`}
@@ -504,7 +504,7 @@ const Dashboard = () => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1, overflowX: 'hidden' }}>
 
           {/* Header */}
-          <header 
+          <header
             className="sticky top-0 z-30 flex items-center justify-between transition-colors duration-300 px-4 sm:px-9"
             style={{
               background: headerBg,
@@ -515,7 +515,7 @@ const Dashboard = () => {
           >
             {/* Title / Hamburger Toggle */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <button 
+              <button
                 onClick={() => setSidebarOpen(true)}
                 className="lg:hidden p-2 text-amber-500 hover:bg-white/5 rounded flex-shrink-0"
                 aria-label="Open Sidebar Menu"
@@ -525,7 +525,7 @@ const Dashboard = () => {
                 </svg>
               </button>
               <div className="decorative-line hidden sm:block" style={{ width: '20px', height: '1px' }} />
-              <span 
+              <span
                 className="text-xs sm:text-sm"
                 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(201,162,39,0.75)' }}
               >
@@ -592,7 +592,7 @@ const Dashboard = () => {
             {/* Page heading */}
             <div style={{ marginBottom: '32px' }}>
               <p className="label-text" style={{ marginBottom: '8px' }}>Overview</p>
-              <h1 
+              <h1
                 className="text-3xl sm:text-4xl"
                 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', fontWeight: 300, color: textPrimary, margin: 0, lineHeight: 1.1 }}
               >
@@ -603,9 +603,9 @@ const Dashboard = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-9">
               {[
-                { label: 'Total Products',    value: productList.length, iconKey: 'inventory', delay: 0 },
-                { label: 'Total Revenue',     value: `₹${revenue}`,      iconKey: 'payments',  delay: 0.05 },
-                { label: 'Added This Month',  value: `${thisMonth} New`,  iconKey: 'trending',  delay: 0.1 },
+                { label: 'Total Products', value: productList.length, iconKey: 'inventory', delay: 0 },
+                { label: 'Total Revenue', value: `₹${revenue}`, iconKey: 'payments', delay: 0.05 },
+                { label: 'Added This Month', value: `${thisMonth} New`, iconKey: 'trending', delay: 0.1 },
               ].map((s) => (
                 <div key={s.label} className="w-full">
                   <StatCard {...s} dark={dark} />

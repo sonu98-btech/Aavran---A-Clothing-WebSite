@@ -60,7 +60,7 @@ export const loginController = async(req,res)=>{
 }
 
 export const googleAuthCallbackController = async (req, res) => {
-    const {id, displayName, emails} = req.user;
+    const {id, displayName, emails,isSeller=false} = req.user;
     const email = emails[0].value;
     let user = await userModel.findOne({email: email});
     if (!user) {
@@ -68,6 +68,7 @@ export const googleAuthCallbackController = async (req, res) => {
             email: email,
             fullname: displayName,
             googleId: id,
+            role:isSeller?"seller":"buyer"
         });
     }
         const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
@@ -76,6 +77,20 @@ export const googleAuthCallbackController = async (req, res) => {
         res.cookie("token", token);
     
 
-    
-    res.redirect("http://localhost:5173/");
+    if(user.role=="seller"){
+        
+        res.redirect("http://localhost:5173/seller/dashboard");   
+    }
+    else{
+        res.redirect("http://localhost:5173/");
+    }
+}
+
+export const getMe = async (req,res)=>{
+    const user = req.user
+    return res.status(201).json({
+        message:"user fetched Successfully",
+        success:true,
+        user
+    })
 }
