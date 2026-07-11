@@ -3,3 +3,17 @@
 /* Tailwind v4: dark: classes activate when data-theme="dark" is on <html> */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #c9a227 0%, #f5e6c8 40%, #ecc246 60%, #c9a227 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+

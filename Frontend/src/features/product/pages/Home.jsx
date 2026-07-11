@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useProduct } from '../hooks/use.product';
 import { useSelector } from 'react-redux';
 import ThemeToggle from '../../../app/ThemeToggle.jsx';
+import { Link } from 'react-router';
 
 /* ════════════════════════════════════════════════════
    GLOBAL STYLES  — faithfully implementing Stitch MCP design
@@ -695,11 +696,11 @@ const Home = () => {
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              <button className="hm-btn-gold" style={{
+              <Link to="/shop"><button className="hm-btn-gold" style={{
                 padding: '12px 32px', borderRadius: 4,
                 fontFamily: 'Inter, sans-serif', fontSize: 10.5,
                 letterSpacing: '0.18em', textTransform: 'uppercase', minWidth: 144,
-              }}>Shop Now</button>
+              }}>Shop Now</button></Link>
               <button className="hm-btn-ghost" style={{
                 padding: '12px 32px', borderRadius: 4,
                 fontFamily: 'Inter, sans-serif', fontSize: 10.5,

@@ -322,7 +322,7 @@ const Shop = () => {
           <div className="w-7 h-7 rounded bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f]">
             <DiamondIcon size={12} />
           </div>
-          <span className="text-sm font-bold tracking-[0.22em] uppercase">AAVRAN</span>
+          <span className="shimmer-text inline-block text-sm font-bold tracking-[0.22em] uppercase">AAVRAN</span>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -340,26 +340,26 @@ const Shop = () => {
       </header>
 
       {/* ══ HERO BANNER ════════════════════════════════════════ */}
-      <section className="relative w-full overflow-hidden bg-[#e9e3d9] dark:bg-[#111118]" style={{ minHeight: 'clamp(240px, 34vh, 400px)' }}>
+      <section className="relative w-full overflow-hidden bg-[#0a0a0f]" style={{ minHeight: 'clamp(240px, 34vh, 400px)' }}>
         <img
-          src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1600&q=80&auto=format&fit=crop"
+          src="/festive_banner.png"
           alt="Women's Collection"
-          className="absolute inset-0 w-full h-full object-cover object-top opacity-35 dark:opacity-25 mix-blend-multiply dark:mix-blend-normal transition-all duration-1000"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-90 dark:opacity-50 transition-all duration-1000"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#F7F4EE] via-[#F7F4EE]/85 to-transparent dark:from-[#0a0a0f] dark:via-[#0a0a0f]/80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent pointer-events-none" />
 
         <div className="relative z-10 flex flex-col justify-center h-full px-8 sm:px-14 py-12">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] font-semibold text-[#8b6914] dark:text-[#c9a227] mb-3">
-            <span className="inline-block w-7 h-px bg-[#8b6914] dark:bg-[#c9a227]" />
+          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] font-semibold text-[#ecc246] mb-3">
+            <span className="inline-block w-7 h-px bg-[#ecc246]" />
             Atelier SS 2026
           </p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1] tracking-tight mb-3" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
-            Women's<br /><em className="font-normal not-italic italic">Collection</em>
+          <h1 className="shop-hero-title text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1] tracking-tight mb-3 text-white" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
+            Women's<br /><span className="shimmer-text inline-block font-semibold italic">Collection</span>
           </h1>
-          <p className="text-sm text-[#1c1408]/55 dark:text-white/50 max-w-sm mb-8 leading-relaxed">
+          <p className="text-sm text-white/70 max-w-sm mb-8 leading-relaxed">
             Timeless outfits for every occasion.
           </p>
-          <button className="self-start px-8 py-3 bg-[#8b2830] hover:bg-[#a03038] dark:bg-[#c9a227] dark:hover:bg-[#ecc246] text-white dark:text-[#0a0a0f] text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5 shadow-md">
+          <button className="gold-btn self-start px-8 py-3 bg-[#8b6914] text-white dark:text-[#0a0a0f] text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5 shadow-md">
             SHOP NOW
           </button>
         </div>
@@ -395,7 +395,7 @@ const Shop = () => {
                   placeholder="Search…"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-2 text-xs w-44 sm:w-52 bg-white/70 dark:bg-white/5 border border-[#8b6914]/18 dark:border-white/10 focus:border-[#8b6914] dark:focus:border-[#c9a227] outline-none text-[#1c1408] dark:text-white placeholder-[#1c1408]/35 dark:placeholder-white/30 transition-colors"
+                  className="glass-input pl-8 pr-3 py-2 text-xs w-44 sm:w-52 bg-white/70 dark:bg-white/5 border border-[#8b6914]/18 dark:border-white/10 focus:border-[#8b6914] dark:focus:border-[#c9a227] outline-none text-[#1c1408] dark:text-white placeholder-[#1c1408]/35 dark:placeholder-white/30 transition-colors"
                 />
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#1c1408]/35 dark:text-white/30 pointer-events-none">
                   <SearchIcon size={13} />
@@ -411,7 +411,7 @@ const Shop = () => {
               </button>
 
               {/* Sort */}
-              <div className="relative flex items-center gap-2 px-3 py-2 bg-white/70 dark:bg-white/5 border border-[#8b6914]/18 dark:border-white/10 hover:border-[#8b6914] dark:hover:border-[#c9a227] transition-colors">
+              <div className="glass-input relative flex items-center gap-2 px-3 py-2 bg-white/70 dark:bg-white/5 border border-[#8b6914]/18 dark:border-white/10 hover:border-[#8b6914] dark:hover:border-[#c9a227] transition-colors">
                 <span className="text-[10px] text-[#1c1408]/40 dark:text-white/35 uppercase tracking-wider whitespace-nowrap">Sort by:</span>
                 <select
                   value={sortBy}
