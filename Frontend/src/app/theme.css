@@ -69,8 +69,8 @@
 }
 
 /* Logo diamond icon boxes */
-[data-theme="light"] .w-7.h-7,
-[data-theme="light"] .w-6.h-6 {
+[data-theme="light"] .w-7.h-7:not(.color-swatch),
+[data-theme="light"] .w-6.h-6:not(.color-swatch) {
   background: #8B6914 !important;
   color: #ffffff !important;
 }

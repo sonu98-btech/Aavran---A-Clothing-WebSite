@@ -75,11 +75,10 @@ const FilterSidebar = ({
           <li key={cat}>
             <button
               onClick={() => { setSelectedCategory(cat); onApply && onApply() }}
-              className={`text-[13px] leading-none transition-colors hover:text-[#8b6914] dark:hover:text-[#c9a227] ${
-                selectedCategory === cat
-                  ? 'text-[#8b6914] dark:text-[#c9a227] font-semibold'
-                  : 'text-[#1c1408]/75 dark:text-white/60'
-              }`}
+              className={`text-[13px] leading-none transition-colors hover:text-[#8b6914] dark:hover:text-[#c9a227] ${selectedCategory === cat
+                ? 'text-[#8b6914] dark:text-[#c9a227] font-semibold'
+                : 'text-[#1c1408]/75 dark:text-white/60'
+                }`}
             >
               {cat}
             </button>
@@ -96,11 +95,10 @@ const FilterSidebar = ({
           <button
             key={sz}
             onClick={() => { setSelectedSize(sz); onApply && onApply() }}
-            className={`h-8 min-w-[36px] px-2.5 border text-[10px] font-semibold tracking-wider uppercase transition-all ${
-              selectedSize === sz
-                ? 'border-[#8b6914] bg-[#8b6914]/8 text-[#8b6914] dark:border-[#c9a227] dark:text-[#c9a227] dark:bg-[#c9a227]/10'
-                : 'border-[#8b6914]/20 dark:border-white/10 text-[#1c1408]/60 dark:text-white/55 hover:border-[#8b6914] dark:hover:border-[#c9a227]'
-            }`}
+            className={`h-8 min-w-[36px] px-2.5 border text-[10px] font-semibold tracking-wider uppercase transition-all ${selectedSize === sz
+              ? 'border-[#8b6914] bg-[#8b6914]/8 text-[#8b6914] dark:border-[#c9a227] dark:text-[#c9a227] dark:bg-[#c9a227]/10'
+              : 'border-[#8b6914]/20 dark:border-white/10 text-[#1c1408]/60 dark:text-white/55 hover:border-[#8b6914] dark:hover:border-[#c9a227]'
+              }`}
           >
             {sz}
           </button>
@@ -132,12 +130,11 @@ const FilterSidebar = ({
             key={c.name}
             title={c.name}
             onClick={() => { setSelectedColor(c.name); onApply && onApply() }}
-            className={`w-6 h-6 transition-all hover:scale-110 ${
-              selectedColor === c.name
-                ? 'ring-2 ring-offset-1 ring-[#8b6914] dark:ring-[#c9a227] dark:ring-offset-[#0a0a0f] scale-110'
-                : ''
-            }`}
-            style={{ backgroundColor: c.hex || 'transparent', border: c.hex ? 'none' : '1.5px dashed rgba(139,105,20,0.3)' }}
+            className={`color-swatch w-6 h-6 transition-all hover:scale-110 ${selectedColor === c.name
+              ? 'ring-2 ring-offset-1 ring-[#8b6914] dark:ring-[#c9a227] dark:ring-offset-[#0a0a0f] scale-110'
+              : ''
+              }`}
+            style={{ backgroundColor: c.hex || 'transparent', border: c.hex ? '1px solid rgba(139, 105, 20, 0.25)' : '1.5px dashed rgba(139, 105, 20, 0.3)' }}
           >
             {!c.hex && (
               <span className="text-[7px] font-bold uppercase text-[#8b6914]/70 dark:text-[#c9a227]/70">All</span>
@@ -194,11 +191,10 @@ const ProductCard = ({ product, wishlisted, onToggleWishlist }) => {
         <button
           onClick={(e) => { e.preventDefault(); onToggleWishlist(product._id) }}
           aria-label="Toggle wishlist"
-          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 ${
-            wishlisted
-              ? 'bg-[#8b6914] text-white dark:bg-[#c9a227] dark:text-[#0a0a0f]'
-              : 'bg-white/80 dark:bg-black/50 text-[#1c1408] dark:text-white'
-          }`}
+          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 ${wishlisted
+            ? 'bg-[#8b6914] text-white dark:bg-[#c9a227] dark:text-[#0a0a0f]'
+            : 'bg-white/80 dark:bg-black/50 text-[#1c1408] dark:text-white'
+            }`}
         >
           <HeartIcon filled={wishlisted} />
         </button>
@@ -420,7 +416,7 @@ const Shop = () => {
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value)}
-                  className="bg-transparent text-xs text-[#1c1408] dark:text-white border-none outline-none cursor-pointer pr-5 appearance-none"
+                  className="bg-transparent text-xs text-[#1c1408] dark:text-white border-none outline-none cursor-pointer pr-5 appearance-none dark:[&>option]:bg-[#0a0a0f] dark:[&>option]:text-white"
                 >
                   <option value="newest">Newest</option>
                   <option value="price-low">Price: Low to High</option>
