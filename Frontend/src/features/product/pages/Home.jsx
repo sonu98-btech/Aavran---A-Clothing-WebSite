@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useProduct } from '../hooks/use.product';
 import { useSelector } from 'react-redux';
 import ThemeToggle from '../../../app/ThemeToggle.jsx';
@@ -122,111 +122,114 @@ const GlobalStyles = () => (
     }
 
     /* ════════════════════════════════════════════
-       PRODUCT CARD  — exact Stitch MCP design
-       glass-card: blur(12px), rgba(255,255,255,0.05)
-       border-top: SOLID 1px #c9a227
-       hover: translateY(-8px), gold glow box-shadow
+       MASONRY CATALOGUE GRID & CARD STYLES
+       — Faithfully matching lookbook screenshot
     ════════════════════════════════════════════ */
 
-    .hm-card {
-      /* glassmorphism */
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      /* border: sides rgba, TOP solid gold */
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-top: 2px solid #c9a227;
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-      cursor: pointer;
-      /* exact Stitch cubic-bezier */
-      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    .hm-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 30px -10px rgba(201, 162, 39, 0.15);
-      border-color: rgba(201, 162, 39, 0.3);
-      border-top: 2px solid #c9a227;
+    /* Masonry grid using CSS columns */
+    .hm-product-masonry {
+      column-count: 4;
+      column-gap: 24px;
+      width: 100%;
     }
 
-    /* Image area: 3:4 portrait, no overlay text */
-    .hm-card-img-box {
-      width: 100%; aspect-ratio: 3/4;
-      overflow: hidden; flex-shrink: 0;
-      background: rgba(3, 7, 34, 0.8); /* #030722 = Stitch primary */
+    /* Individual masonry item container */
+    .hm-card {
+      break-inside: avoid;
+      margin-bottom: 24px;
       position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      display: block;
+      background: transparent;
+      border: none;
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .hm-card:hover {
+      transform: scale(1.015);
+    }
+
+    /* Image wrapper */
+    .hm-card-img-box {
+      width: 100%;
+      height: auto;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255,255,255,0.03);
     }
     .hm-card-img-box img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
       transition: transform 1200ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
     }
     .hm-card:hover .hm-card-img-box img {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
 
-    /* Card body: p-6 = 24px (Stitch) */
-    .hm-card-body {
-      padding: 24px;
-      display: flex; flex-direction: column; flex-grow: 1;
-      justify-content: space-between;
+    /* Information overlay — dark fade on hover exactly like lookbook */
+    .hm-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 15, 0.72);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      padding: 20px;
+      text-align: center;
+      z-index: 2;
     }
-    .hm-card-body-inner { margin-bottom: 24px; }
+    .hm-card:hover .hm-card-overlay {
+      opacity: 1;
+    }
 
-    /* Title row: title LEFT, price RIGHT — EXACTLY Stitch */
-    .hm-card-meta {
-      display: flex; justify-content: space-between;
-      align-items: flex-start; margin-bottom: 8px;
-    }
+    /* Overlay title — uppercase tracked white */
     .hm-card-title {
       font-family: 'Inter', sans-serif;
-      font-weight: 700; font-size: 18px;
-      color: #ffffff; letter-spacing: 0.02em;
-      flex: 1; min-width: 0;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      padding-right: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 8px;
+      line-height: 1.4;
     }
+
+    /* Overlay price */
     .hm-card-price {
       font-family: 'Inter', sans-serif;
-      color: #c9a227; font-weight: 500;
-      white-space: nowrap; flex-shrink: 0;
-      font-size: 15px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #c9a227;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
     }
 
-    /* Description: outline-variant color per Stitch palette */
-    .hm-card-desc {
-      font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 300; line-height: 1.6;
-      color: #c7c5ce; /* outline-variant from Stitch */
-      display: -webkit-box;
-      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* Ghost cart button — Stitch ghost-btn with light-sweep */
+    /* Overlay minimal 'add to cart' trigger */
     .hm-cart-btn {
-      position: relative; overflow: hidden;
-      width: 100%; cursor: pointer;
-      padding: 12px 0;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: transparent; border-radius: 2px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
+      padding: 8px 16px;
       font-family: 'Inter', sans-serif;
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.10em; text-transform: uppercase;
-      transition: all 0.3s ease;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
-    /* Stitch ghost-btn shimmer sweep ::before */
-    .hm-cart-btn::before {
-      content: ''; position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.2), transparent);
-      transition: left 0.5s ease;
+    .hm-cart-btn:hover {
+      border-color: #c9a227;
+      color: #c9a227;
+      background: rgba(201, 162, 39, 0.08);
     }
-    .hm-cart-btn:hover { border-color: rgba(201,162,39,0.5); }
-    .hm-cart-btn:hover::before { left: 100%; }
 
     /* ── Stats strip ── */
     .hm-stat-cell {
@@ -351,6 +354,7 @@ const GlobalStyles = () => (
       transition: transform 1200ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease !important;
     }
     [data-theme="light"] .hm-card-title   { color: #1c1408 !important; }
+    [data-theme="light"] .hm-card:hover .hm-card-title { color: #ffffff !important; }
     [data-theme="light"] .hm-card-price   { color: #8b6914 !important; }
     [data-theme="light"] .hm-card-desc    { color: rgba(28,20,8,0.5) !important; }
     [data-theme="light"] .hm-cart-btn {
@@ -436,7 +440,7 @@ const BoxIcon = ({ size = 44 }) => (
 );
 
 /* ════════════════════════════════════════════════════
-   PRODUCT CARD  — exact Stitch MCP glass-card implementation
+   PRODUCT CARD  — masonry lookbook implementation
 ════════════════════════════════════════════════════ */
 const ProductCard = ({ product, index }) => {
   const [imgErr, setImgErr] = useState(false);
@@ -444,13 +448,17 @@ const ProductCard = ({ product, index }) => {
   const imageUrl = product.images?.[0]?.url;
   const price = product.price?.amount ?? 0;
 
+  // Assign deterministic aspect ratios to simulate Pinterest masonry layout
+  const aspectRatios = ['aspect-[3/4]', 'aspect-[1/1]', 'aspect-[3/2]', 'aspect-[2/3]'];
+  const aspectClass = aspectRatios[index % aspectRatios.length];
+
   return (
     <div
       className="hm-card hm-card-in"
       style={{ animationDelay: `${(index % 8) * 0.07}s` }}
     >
-      {/* ── Image: 3/4 aspect, NO text/price overlay ── */}
-      <div className="hm-card-img-box">
+      {/* ── Image & Hover Overlay ── */}
+      <div className={`hm-card-img-box ${aspectClass}`}>
         {imageUrl && !imgErr && !imgLoaded && (
           <div style={{
             position: 'absolute', inset: 0,
@@ -486,48 +494,26 @@ const ProductCard = ({ product, index }) => {
             }}>No Image</span>
           </div>
         )}
-      </div>
 
-      {/* ── Card body: p-24, title+price same row, desc, ghost btn ── */}
-      <div className="hm-card-body">
-        <div className="hm-card-body-inner">
-          {/* Title LEFT  |  Price RIGHT — exact Stitch layout */}
-          <div className="hm-card-meta">
-            <h3 className="hm-card-title">{product.title}</h3>
-            <span className="hm-card-price">₹{price.toLocaleString('en-IN')}</span>
-          </div>
-          {/* Description */}
-          <p className="hm-card-desc">
-            {product.description || 'Premium quality piece from the Aavran Collection.'}
-          </p>
+        {/* Hover info overlay centered exactly like 'BEDSHEET' in lookbook */}
+        <div className="hm-card-overlay">
+          <h3 className="hm-card-title" style={{ margin: 0 }}>{product.title}</h3>
         </div>
-
-        {/* Add to Cart — Stitch ghost-btn with gold shimmer sweep */}
-        <button className="hm-cart-btn">
-          <CartIcon size={13} />
-          Add to Cart
-        </button>
       </div>
     </div>
   );
 };
 
 /* ── Skeleton Card ── */
-const SkeletonCard = () => (
-  <div className="hm-card">
-    <div className="hm-card-top" style={{ animation: 'none', opacity: 0.3 }} />
-    <div className="hm-card-img-box hm-skeleton" />
-    <div className="hm-card-body" style={{ gap: 10 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-        <div className="hm-skeleton" style={{ height: 14, borderRadius: 4, width: '60%' }} />
-        <div className="hm-skeleton" style={{ height: 14, borderRadius: 4, width: '22%' }} />
-      </div>
-      <div className="hm-skeleton" style={{ height: 11, borderRadius: 3, width: '88%' }} />
-      <div className="hm-skeleton" style={{ height: 11, borderRadius: 3, width: '65%' }} />
-      <div className="hm-skeleton" style={{ height: 36, borderRadius: 6, width: '100%', marginTop: 4 }} />
+const SkeletonCard = ({ index }) => {
+  const aspectRatios = ['aspect-[3/4]', 'aspect-[1/1]', 'aspect-[3/2]', 'aspect-[2/3]'];
+  const aspectClass = aspectRatios[index % aspectRatios.length];
+  return (
+    <div className="hm-card">
+      <div className={`hm-card-img-box hm-skeleton ${aspectClass}`} />
     </div>
-  </div>
-);
+  );
+};
 
 /* ════════════════════════════════════════════════════
    MAIN HOME COMPONENT
@@ -546,7 +532,19 @@ const Home = () => {
     })();
   }, []);
 
-  const products = Array.isArray(allProducts) ? allProducts : [];
+  const allProductList = Array.isArray(allProducts) ? allProducts : [];
+
+  const products = useMemo(() => {
+    if (allProductList.length <= 25) return allProductList;
+
+    const shuffledProducts = [...allProductList];
+    for (let i = shuffledProducts.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledProducts[i], shuffledProducts[j]] = [shuffledProducts[j], shuffledProducts[i]];
+    }
+
+    return shuffledProducts.slice(0, 25);
+  }, [allProductList]);
 
   return (
     <div
@@ -819,7 +817,7 @@ const Home = () => {
               border: '1px solid rgba(201,162,39,0.25)',
               color: '#c9a227', whiteSpace: 'nowrap',
             }}>
-              {products.length} {products.length === 1 ? 'Item' : 'Items'}
+              {products.length} Random Picks
             </span>
           )}
         </div>
@@ -829,8 +827,8 @@ const Home = () => {
 
         {/* ── Loading ── */}
         {loading && (
-          <div className="hm-product-grid" style={{ display: 'grid', gap: 20 }}>
-            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+          <div className="hm-product-masonry">
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} index={i} />)}
           </div>
         )}
 
@@ -856,15 +854,14 @@ const Home = () => {
           </div>
         )}
 
-        {/* ── Product Grid (Stitch MCP: 4-column, uniform) ── */}
+        {/* ── Product Grid (Stitch MCP: Masonry) ── */}
         {!loading && products.length > 0 && (
-          <div className="hm-product-grid" style={{ display: 'grid', gap: 20 }}>
+          <div className="hm-product-masonry">
             {products.map((product, i) => (
               <ProductCard
                 key={product._id || i}
                 product={product}
                 index={i}
-                isNew={i < 3}
               />
             ))}
           </div>

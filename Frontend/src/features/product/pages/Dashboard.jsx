@@ -89,8 +89,13 @@ const GlobalStyles = ({ dark }) => (
     }
 
     /* Product card image zoom */
-    .prod-img { transition: transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94); }
-    .prod-img:hover { transform: scale(1.07); }
+    .prod-img {
+      transition: transform 1200ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease !important;
+    }
+    .glass-card-dark:hover .prod-img,
+    .glass-card-light:hover .prod-img {
+      transform: scale(1.05) !important;
+    }
 
     /* Gold primary button */
     .gold-btn {

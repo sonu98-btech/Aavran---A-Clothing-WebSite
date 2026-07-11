@@ -10,9 +10,9 @@ export const routes = createBrowserRouter(
         {
             path: "/",
             element:
-                <Protected>
+        
                     <Home/>
-                </Protected>
+              
         },
         {
             path: "/register",

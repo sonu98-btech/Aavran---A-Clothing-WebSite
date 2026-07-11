@@ -91,6 +91,12 @@ export const getMe = async (req,res)=>{
     return res.status(201).json({
         message:"user fetched Successfully",
         success:true,
-        user
+        user:{
+             id:user._id,
+            email:user.email,
+            contact:user.contact,
+            fullname:user.fullname,
+            role:user.role
+        }
     })
 }
