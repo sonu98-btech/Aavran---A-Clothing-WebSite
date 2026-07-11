@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useProduct } from '../hooks/use.product'
 import { useSelector } from 'react-redux'
 import ThemeToggle from '../../../app/ThemeToggle.jsx'
@@ -231,6 +231,11 @@ const Shop = () => {
   const { handleGetAllProducts } = useProduct()
   const storeProducts = useSelector((state) => state.product.allProducts) || []
 
+  const productsRef = useRef(null)
+  const scrollToProducts = () => {
+    productsRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   const [loading, setLoading] = useState(true)
   const [wishlistedIds, setWishlistedIds] = useState([])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -359,14 +364,14 @@ const Shop = () => {
           <p className="text-sm text-white/70 max-w-sm mb-8 leading-relaxed">
             Timeless outfits for every occasion.
           </p>
-          <button className="gold-btn self-start px-8 py-3 bg-[#8b6914] text-white dark:text-[#0a0a0f] text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5 shadow-md">
+          <button onClick={scrollToProducts} className="gold-btn self-start px-8 py-3 bg-[#8b6914] text-white dark:text-[#0a0a0f] text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5 shadow-md">
             SHOP NOW
           </button>
         </div>
       </section>
 
       {/* ══ MAIN LAYOUT: sidebar + grid ════════════════════════ */}
-      <div className="max-w-[1440px] mx-auto flex gap-0">
+      <div ref={productsRef} className="max-w-[1440px] mx-auto flex gap-0">
 
         {/* ─ Desktop sidebar ─ */}
         <aside className="shop-sidebar hidden lg:block w-56 xl:w-64 flex-shrink-0 px-6 xl:px-8 py-8 border-r border-[#8b6914]/10 dark:border-white/8 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto">
