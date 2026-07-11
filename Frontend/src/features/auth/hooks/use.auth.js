@@ -23,6 +23,7 @@ export const useAuth = () => {
       });
       dispatch(setUser(data.user));
       dispatch(setError(null));
+      return data.user;
     } catch (error) {
       dispatch(
         setError(error?.response?.data?.message || "Registration failed"),
@@ -39,6 +40,7 @@ export const useAuth = () => {
       const data = await login({ email, password });
       dispatch(setUser(data.user));
       dispatch(setError(null));
+      return data.user;
     } catch (error) {
       dispatch(setError(error?.response?.data?.message || "Login failed"));
       throw error;

@@ -18,3 +18,8 @@ export const getAllProducts = async()=>{
     const response = await productApiInstance.get("/")
     return response.data
 }
+
+export const getProductDetail = async(productId)=>{
+    const response = await productApiInstance.get(`/${productId}`)
+    return response.data
+}

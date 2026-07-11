@@ -190,7 +190,7 @@ const Login = () => {
   // ── Redux state ──
   const loading = useSelector((state) => state.auth.loading);
   const error = useSelector((state) => state.auth.error);
-  const user = useSelector((state)=>state.auth.user)
+  const user = useSelector((state) => state.auth.user)
   const { loginHandler } = useAuth();
 
   useEffect(() => { setMounted(true); }, []);
@@ -200,17 +200,16 @@ const Login = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await loginHandler({
+      const loggedUser = await loginHandler({
         email: form.email,
         password: form.password,
       });
-      if(user.role=="buyer"){
-      navigate("/");
+      const nextUser = loggedUser || user;
+      if (nextUser?.role === "buyer") {
+        navigate("/");
+      } else if (nextUser?.role) {
+        navigate("/seller/dashboard");
       }
-      else{
-        navigate("/seller/dashboard")
-      }
-
     } catch (err) {
       console.error("Login error:", err);
     }

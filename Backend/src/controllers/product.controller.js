@@ -49,3 +49,13 @@ export const getAllProduct = async(req,res)=>{
         products
     })
 }
+
+export const getProductDetail = async(req,res)=>{
+    const {productId} = req.params
+    const productDetail = await productModel.findById(productId)
+    res.status(200).json({
+        message:"Product detail fetched",
+        success:true,
+        productDetail
+    })
+}

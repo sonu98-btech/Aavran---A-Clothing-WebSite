@@ -4,7 +4,7 @@ import productModel from '../models/product.model.js';
 import { authenticateSeller } from '../middlewares/auth.middleware.js';
 import multer from 'multer';
 import { createProductValidator } from '../validator/product..validation.js';
-import { createProduct, getSellerProducts,getAllProduct} from '../controllers/product.controller.js';
+import { createProduct, getSellerProducts,getAllProduct,getProductDetail} from '../controllers/product.controller.js';
  
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -17,5 +17,8 @@ productRouter.get("/seller",authenticateSeller,getSellerProducts)
 
 // get all seller all product route
 productRouter.get("/",getAllProduct)
+
+// get Product Detail
+productRouter.get("/:productId",getProductDetail)
 
 export default productRouter

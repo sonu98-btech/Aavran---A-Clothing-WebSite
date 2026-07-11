@@ -241,18 +241,18 @@ const Register = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await registerHandler({
+      const registeredUser = await registerHandler({
         fullname: form.fullName,
         email: form.email,
         contact: form.phone,
         password: form.password,
         isSeller: form.isSeller,
       });
-      if(user.role=="buyer"){
-      navigate("/");
-      }
-      else{
-        navigate("/seller/dashboard")
+      const nextUser = registeredUser || user;
+      if (nextUser?.role === "buyer") {
+        navigate("/");
+      } else if (nextUser?.role) {
+        navigate("/seller/dashboard");
       }
     } catch (err) {
       console.log("error", err)

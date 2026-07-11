@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useProduct } from '../hooks/use.product'
 import { useSelector } from 'react-redux'
 import ThemeToggle from '../../../app/ThemeToggle.jsx'
+import { Link } from 'react-router'
 
 /* ─── Icon Components ───────────────────────────────────────── */
 const DiamondIcon = ({ size = 14 }) => (
@@ -456,12 +457,14 @@ const Shop = () => {
           {!loading && filteredProducts.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-9">
               {filteredProducts.map((product) => (
+                  
+                <Link to ={`/shop/${product._id}`}key={product._id} >
                 <ProductCard
-                  key={product._id}
                   product={product}
                   wishlisted={wishlistedIds.includes(product._id)}
                   onToggleWishlist={toggleWishlist}
                 />
+                </Link>
               ))}
             </div>
           )}
