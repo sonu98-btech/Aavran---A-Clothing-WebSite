@@ -60,7 +60,7 @@
    2. HEADER / TOP BAR
    ════════════════════════════════════════════════════════════════ */
 
-[data-theme="light"] header,
+[data-theme="light"] header:not(.shop-header),
 [data-theme="light"] .absolute.top-0.left-0.right-0.z-20,
 [data-theme="light"] .absolute.top-0.left-0.right-0.z-30 {
   background: rgba(247,244,238,0.92) !important;
@@ -413,21 +413,21 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* Dark mode — dashboard header & sidebar (solid backgrounds) */
-[data-theme="dark"] header {
+[data-theme="dark"] header:not(.shop-header) {
   background: #0e0e16 !important;
   border-bottom-color: rgba(255,255,255,0.08) !important;
 }
-[data-theme="dark"] aside {
+[data-theme="dark"] aside:not(.shop-sidebar) {
   background: #0e0e16 !important;
   border-right-color: rgba(255,255,255,0.07) !important;
 }
 
 /* Light mode — dashboard header & sidebar */
-[data-theme="light"] header {
+[data-theme="light"] header:not(.shop-header) {
   background: #f5f0e4 !important;
   border-bottom-color: rgba(201,162,39,0.22) !important;
 }
-[data-theme="light"] aside {
+[data-theme="light"] aside:not(.shop-sidebar) {
   background: #f5f0e4 !important;
   border-right-color: rgba(201,162,39,0.18) !important;
 }
@@ -461,8 +461,8 @@
   background: #f8f5ee !important;
 }
 
-/* Header — warm ivory */
-[data-theme="light"] header {
+/* Light mode — create product page header */
+[data-theme="light"] header:not(.shop-header) {
   background: rgba(245,240,228,0.95) !important;
   border-bottom-color: rgba(201,162,39,0.15) !important;
 }
