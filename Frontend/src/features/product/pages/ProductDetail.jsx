@@ -717,26 +717,83 @@ const ProductDetail = () => {
     }
   }, [dbSizes]);
 
+  const getAttr = (v, key) => {
+    if (!v.attributes) return undefined;
+    return typeof v.attributes.get === "function" ? v.attributes.get(key) : v.attributes[key];
+  };
+
+  const handleSelectColor = (colorName) => {
+    setSelectedColor(colorName);
+
+    const list = product?.variants || product?.varients || [];
+    if (list.length === 0) return;
+    if (colorName === "Default" && selectedSize === "Default") return;
+
+    const hasMatch = list.some((v) => {
+      const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
+      const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
+      return colorVal === colorName && sizeVal === selectedSize;
+    });
+
+    if (!hasMatch) {
+      const matchingVariant = list.find((v) => {
+        const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
+        return colorVal === colorName;
+      });
+
+      if (matchingVariant) {
+        const sizeVal = getAttr(matchingVariant, "size") || getAttr(matchingVariant, "Size") || "Default";
+        setSelectedSize(sizeVal);
+      } else {
+        setSelectedColor("Default");
+        setSelectedSize("Default");
+      }
+    }
+  };
+
+  const handleSelectSize = (sizeName) => {
+    setSelectedSize(sizeName);
+
+    const list = product?.variants || product?.varients || [];
+    if (list.length === 0) return;
+    if (selectedColor === "Default" && sizeName === "Default") return;
+
+    const hasMatch = list.some((v) => {
+      const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
+      const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
+      return colorVal === selectedColor && sizeVal === sizeName;
+    });
+
+    if (!hasMatch) {
+      const matchingVariant = list.find((v) => {
+        const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
+        return sizeVal === sizeName;
+      });
+
+      if (matchingVariant) {
+        const colorVal = getAttr(matchingVariant, "color") || getAttr(matchingVariant, "Color") || "Default";
+        setSelectedColor(colorVal);
+      } else {
+        setSelectedColor("Default");
+        setSelectedSize("Default");
+      }
+    }
+  };
+
   // Find variant matching currently selected color & size
   const activeVariant = React.useMemo(() => {
     const list = product?.variants || product?.varients;
     if (!product || !Array.isArray(list)) return null;
-    if (selectedColor === "Default" || selectedSize === "Default") return null;
-
-    const getAttr = (v, key) => {
-      if (!v.attributes) return undefined;
-      if (typeof v.attributes.get === "function") {
-        return v.attributes.get(key);
-      }
-      return v.attributes[key];
-    };
+    if (selectedColor === "Default" && selectedSize === "Default") return null;
 
     return list.find((v) => {
       const colorVal = getAttr(v, "color") || getAttr(v, "Color");
       const sizeVal = getAttr(v, "size") || getAttr(v, "Size");
-      const matchC = !selectedColor || colorVal === selectedColor;
-      const matchS = !selectedSize || sizeVal === selectedSize;
-      return matchC && matchS;
+
+      const matchColor = selectedColor === "Default" ? !colorVal : colorVal === selectedColor;
+      const matchSize = selectedSize === "Default" ? !sizeVal : sizeVal === selectedSize;
+
+      return matchColor && matchSize;
     });
   }, [product, selectedColor, selectedSize]);
 
@@ -878,7 +935,7 @@ const ProductDetail = () => {
                         <button
                           key={name}
                           title={name}
-                          onClick={() => setSelectedColor(name)}
+                          onClick={() => handleSelectColor(name)}
                           className="color-swatch w-7 h-7 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
                           style={{
                             backgroundColor: isDefault
@@ -918,7 +975,7 @@ const ProductDetail = () => {
                       <button
                         key={sz}
                         className={`pd-size-btn ${selectedSize === sz ? "selected" : ""}`}
-                        onClick={() => setSelectedSize(sz)}
+                        onClick={() => handleSelectSize(sz)}
                       >
                         {sz}
                       </button>
