@@ -165,7 +165,7 @@ const CreateProduct = () => {
   const { handleCreateProduct } = useProduct();
 
   const [navOpen, setNavOpen] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", priceAmount: "", priceCurrency: "INR" });
+  const [form, setForm] = useState({ title: "", description: "", priceAmount: "", priceCurrency: "INR", color: "", size: "", stock: "" });
   const [images, setImages] = useState([]);
   const [isDragOver, setIsDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -196,6 +196,9 @@ const CreateProduct = () => {
     setError(null); setSuccess(false);
     if (!form.title.trim()) { setError("Product title is required."); return; }
     if (!form.priceAmount || Number(form.priceAmount) <= 0) { setError("Enter a valid price."); return; }
+    if (!form.color.trim()) { setError("Product color is required."); return; }
+    if (!form.size.trim()) { setError("Product size is required."); return; }
+    if (!form.stock || Number(form.stock) < 0) { setError("Enter a valid stock quantity."); return; }
     setLoading(true);
     try {
       const fd = new FormData();
@@ -203,11 +206,14 @@ const CreateProduct = () => {
       fd.append("description", form.description);
       fd.append("priceAmount", form.priceAmount);
       fd.append("priceCurrency", form.priceCurrency);
+      fd.append("color", form.color);
+      fd.append("size", form.size);
+      fd.append("stock", form.stock);
       images.forEach(({ file }) => fd.append("images", file));
       const newProduct = await handleCreateProduct(fd);
       if (newProduct) dispatch(setSellerProducts([...sellerProducts, newProduct]));
       setSuccess(true);
-      setForm({ title: "", description: "", priceAmount: "", priceCurrency: "INR" });
+      setForm({ title: "", description: "", priceAmount: "", priceCurrency: "INR", color: "", size: "", stock: "" });
       images.forEach(({ preview }) => URL.revokeObjectURL(preview));
       setImages([]);
       setTimeout(() => setSuccess(false), 3000);
@@ -502,6 +508,52 @@ const CreateProduct = () => {
                         <option value="EUR">EUR</option>
                         <option value="GBP">GBP</option>
                       </select>
+                    </Field>
+                  </div>
+                </div>
+
+                {/* Color + Size + Stock row */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Color */}
+                  <div className="flex-1">
+                    <Field id="cp-color" label="Color">
+                      <input
+                        id="cp-color"
+                        type="text"
+                        value={form.color}
+                        onChange={handle("color")}
+                        placeholder="e.g. Red, Beige Gold, Noir"
+                        className="glass-input cp-glass-input"
+                      />
+                    </Field>
+                  </div>
+
+                  {/* Size */}
+                  <div className="flex-1">
+                    <Field id="cp-size" label="Size">
+                      <input
+                        id="cp-size"
+                        type="text"
+                        value={form.size}
+                        onChange={handle("size")}
+                        placeholder="e.g. M, L, XL, Free"
+                        className="glass-input cp-glass-input"
+                      />
+                    </Field>
+                  </div>
+
+                  {/* Stock */}
+                  <div className="flex-1">
+                    <Field id="cp-stock" label="Stock">
+                      <input
+                        id="cp-stock"
+                        type="number"
+                        min="0"
+                        value={form.stock}
+                        onChange={handle("stock")}
+                        placeholder="e.g. 50"
+                        className="glass-input cp-glass-input"
+                      />
                     </Field>
                   </div>
                 </div>

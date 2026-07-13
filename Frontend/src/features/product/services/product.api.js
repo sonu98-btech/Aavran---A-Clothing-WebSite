@@ -23,9 +23,9 @@ export const getProductDetail = async (productId) => {
     const response = await productApiInstance.get(`/${productId}`)
     return response.data
 }
-// add product varients 
+// add product variants 
 
-export const addVarients = async (productId, formData) => {
-    const response = await productApiInstance.post(`/${productId}/varients`, formData, )
+export const addVariants = async (productId, formData) => {
+    const response = await productApiInstance.post(`/${productId}/variants`, formData)
     return response.data
 }

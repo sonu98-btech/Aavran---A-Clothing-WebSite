@@ -326,7 +326,7 @@ const SkeletonDetail = () => (
    ═══════════════════════════════════════════════════════════════ */
 const SellerProductDetails = () => {
     const { id } = useParams();
-    const { handleGetProductDetail, handleAddVarients } = useProduct();
+    const { handleGetProductDetail, handleAddVariants } = useProduct();
     const product = useSelector((state) => state.product.productDetail);
     const loading = useSelector((state) => state.product.loading);
     const navigate = useNavigate();
@@ -338,6 +338,8 @@ const SellerProductDetails = () => {
     // Variant form states
     const [vPrice, setVPrice] = useState("");
     const [vStock, setVStock] = useState("0");
+    const [vColor, setVColor] = useState("");
+    const [vSize, setVSize] = useState("");
     const [vImages, setVImages] = useState([]);
     const [vAttributes, setVAttributes] = useState([{ key: "", value: "" }]);
     const [submitLoading, setSubmitLoading] = useState(false);
@@ -390,6 +392,14 @@ const SellerProductDetails = () => {
         setFormError("");
         setFormSuccess(false);
 
+        if (!vColor.trim()) {
+            setFormError("Please enter a color for this variant.");
+            return;
+        }
+        if (!vSize.trim()) {
+            setFormError("Please enter a size for this variant.");
+            return;
+        }
         if (vStock === "" || Number(vStock) < 0) {
             setFormError("Please enter a valid stock quantity.");
             return;
@@ -405,14 +415,18 @@ const SellerProductDetails = () => {
             const fd = new FormData();
             if (vPrice) fd.append("price", vPrice);
             fd.append("stock", vStock);
+            fd.append("color", vColor);
+            fd.append("size", vSize);
             fd.append("attributes", JSON.stringify(attrObj));
             vImages.forEach(({ file }) => fd.append("images", file));
 
-            const res = await handleAddVarients(id, fd);
+            const res = await handleAddVariants(id, fd);
             if (res) {
                 setFormSuccess(true);
                 setVPrice("");
                 setVStock("0");
+                setVColor("");
+                setVSize("");
                 vImages.forEach((img) => URL.revokeObjectURL(img.preview));
                 setVImages([]);
                 setVAttributes([{ key: "", value: "" }]);
@@ -668,6 +682,36 @@ const SellerProductDetails = () => {
                                             </div>
                                         </div>
 
+                                        {/* Color & Size */}
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                                            <div>
+                                                <label className="spd-text-muted" style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+                                                    Variant Color
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    placeholder="e.g. Red"
+                                                    value={vColor}
+                                                    onChange={(e) => setVColor(e.target.value)}
+                                                    className="spd-glass-input"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="spd-text-muted" style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+                                                    Variant Size
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    placeholder="e.g. L"
+                                                    value={vSize}
+                                                    onChange={(e) => setVSize(e.target.value)}
+                                                    className="spd-glass-input"
+                                                />
+                                            </div>
+                                        </div>
+
                                         {/* Image uploads */}
                                         <div style={{ marginBottom: 16 }}>
                                             <label className="spd-text-muted" style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
@@ -765,15 +809,15 @@ const SellerProductDetails = () => {
                             {/* Right: Existing Variants */}
                             <div>
                                 <h3 style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(201,162,39,0.8)", margin: "0 0 16px 0" }}>
-                                    Published Variants ({product?.varients?.length || 0})
+                                    Published Variants ({product?.variants?.length || 0})
                                 </h3>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                    {!product?.varients || product.varients.length === 0 ? (
+                                    {!product?.variants || product.variants.length === 0 ? (
                                         <div style={{ padding: 24, borderRadius: 4, border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", textAlign: "center" }}>
                                             <p className="spd-text-muted" style={{ fontSize: 12, margin: 0 }}>No variants published yet.</p>
                                         </div>
                                     ) : (
-                                        product.varients.map((v, idx) => {
+                                        product.variants.map((v, idx) => {
                                             const vUrls = (v.images || []).flatMap((img) =>
                                                 (img.url || "").split(" ~ ").map((u) => u.trim()).filter(Boolean)
                                             );
@@ -794,7 +838,7 @@ const SellerProductDetails = () => {
                                                         {vUrls.length > 0 ? (
                                                             <img src={vUrls[0]} alt="variant" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                                                         ) : (
-                                                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.25 }}>
+                                                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyCenter: "center", opacity: 0.25 }}>
                                                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.4" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                                                 </svg>
@@ -810,19 +854,23 @@ const SellerProductDetails = () => {
                                                                 {v.stock > 0 ? `Stock: ${v.stock}` : "Out of Stock"}
                                                             </span>
                                                         </div>
-                                                        {v.attributes && Object.keys(v.attributes).length > 0 && (
-                                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-                                                                {Object.entries(v.attributes).map(([key, val]) => (
-                                                                    <span
-                                                                        key={key}
-                                                                        className="spd-glass spd-text-muted"
-                                                                        style={{ fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.05)" }}
-                                                                    >
-                                                                        {key}: {val}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        )}
+                                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                                                            <span className="spd-glass spd-text-muted" style={{ fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.05)" }}>
+                                                                color: {v.color}
+                                                            </span>
+                                                            <span className="spd-glass spd-text-muted" style={{ fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.05)" }}>
+                                                                size: {v.size}
+                                                            </span>
+                                                            {v.attributes && Object.entries(v.attributes).map(([key, val]) => (
+                                                                <span
+                                                                    key={key}
+                                                                    className="spd-glass spd-text-muted"
+                                                                    style={{ fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.05)" }}
+                                                                >
+                                                                    {key}: {val}
+                                                                </span>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );

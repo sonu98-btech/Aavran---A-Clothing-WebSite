@@ -353,6 +353,10 @@ const StarRating = ({ rating = 4.7, reviews = 128 }) => (
 const ImageGallery = ({ images }) => {
   const [activeIdx, setActiveIdx] = useState(0);
 
+  useEffect(() => {
+    setActiveIdx(0);
+  }, [images]);
+
   const allUrls = (images || []).flatMap((img) =>
     (img.url || "").split(" ~ ").map((u) => u.trim()).filter(Boolean)
   );
@@ -635,6 +639,7 @@ const ProductDetail = () => {
 
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [selectedAttrs, setSelectedAttrs] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -645,16 +650,37 @@ const ProductDetail = () => {
     const sizeSet = new Set();
     const colorSet = new Set();
 
+    // Add base product color if present
+    if (product?.color) {
+      const capitalized = product.color.charAt(0).toUpperCase() + product.color.slice(1).toLowerCase();
+      colorSet.add(capitalized);
+    }
+
+    // Add base product size if present
+    if (product?.size) {
+      sizeSet.add(product.size.toUpperCase());
+    }
+
     const variantsList = product?.variants || product?.varients || [];
 
     if (product && Array.isArray(variantsList)) {
       variantsList.forEach((v) => {
+        if (v.color) {
+          const capitalized = v.color.charAt(0).toUpperCase() + v.color.slice(1).toLowerCase();
+          colorSet.add(capitalized);
+        }
+        if (v.size) {
+          sizeSet.add(v.size.toUpperCase());
+        }
         if (v.attributes) {
-          const entries = v.attributes instanceof Map
-            ? Array.from(v.attributes.entries())
-            : typeof v.attributes.entries === "function"
-              ? Array.from(v.attributes.entries())
-              : Object.entries(v.attributes);
+          let entries = [];
+          if (v.attributes instanceof Map) {
+            entries = Array.from(v.attributes.entries());
+          } else if (typeof v.attributes.entries === "function") {
+            entries = Array.from(v.attributes.entries());
+          } else if (typeof v.attributes === "object") {
+            entries = Object.entries(v.attributes);
+          }
 
           entries.forEach(([key, val]) => {
             const kLower = key.toLowerCase();
@@ -686,72 +712,195 @@ const ProductDetail = () => {
       blue: '#1d4ed8',
       red: '#dc2626',
       olive: '#65a30d',
+      white: '#ffffff',
+      black: '#000000',
+      grey: '#808080',
+      navy: '#000080',
+      yellow: '#facc15',
+      orange: '#f97316',
+      purple: '#a855f7',
+      wine: '#722f37',
+      peach: '#ffcba4',
+      mustard: '#e1ad01',
+      lavender: '#e6e6fa',
+      mauve: '#e0b0ff',
+      lilac: '#c8a2c8',
+      charcoal: '#36454f',
+      teal: '#008080',
+      rust: '#b7410e',
+      beige: '#f5f5dc',
+      khaki: '#c3b091',
+      mint: '#3eb489',
+      turquoise: '#40e0d0',
+      coral: '#ff7f50',
+      magenta: '#ff00ff',
+      ivory: '#fffff0',
+      gold: '#ffd700',
+      silver: '#c0c0c0',
+      bronze: '#cd7f32',
+      copper: '#b87333',
+      plum: '#dda0dd',
+      emerald: '#50c878',
+      ruby: '#e0115f',
+      sapphire: '#0f52ba',
     };
 
     const parsedColors = Array.from(colorSet).map((name) => {
       const normalized = name.toLowerCase().trim();
       return {
         name,
-        hex: colorHexMap[normalized] || "#cccccc",
+        hex: colorHexMap[normalized] || normalized,
       };
     });
 
-    // If variants exist, prepend 'Default' option to let users select base product details
-    const finalSizes = sizeSet.size > 0 ? ["Default", ...Array.from(sizeSet)] : [];
-    const finalColors = colorSet.size > 0 ? [{ name: "Default", hex: "#777777" }, ...parsedColors] : [];
+    const finalSizes = Array.from(sizeSet);
 
     return {
       dbSizes: finalSizes,
-      dbColors: finalColors,
+      dbColors: parsedColors,
     };
   }, [product]);
 
-  // Set default selection based on 'Default' config option if present
-  useEffect(() => {
-    if (dbColors.length > 0) {
-      setSelectedColor("Default");
-    }
-  }, [dbColors]);
-
-  useEffect(() => {
-    if (dbSizes.length > 0) {
-      setSelectedSize("Default");
-    }
-  }, [dbSizes]);
-
+  // Helper functions to extract color and size from variant
   const getAttr = (v, key) => {
     if (!v.attributes) return undefined;
-    return typeof v.attributes.get === "function" ? v.attributes.get(key) : v.attributes[key];
+    const targetKey = key.toLowerCase();
+    
+    let attrsObj = {};
+    if (v.attributes instanceof Map) {
+      attrsObj = Object.fromEntries(v.attributes.entries());
+    } else if (typeof v.attributes.entries === "function") {
+      attrsObj = Object.fromEntries(v.attributes.entries());
+    } else if (typeof v.attributes === "object") {
+      attrsObj = v.attributes;
+    }
+
+    for (const [k, val] of Object.entries(attrsObj)) {
+      if (k.toLowerCase() === targetKey) {
+        return val;
+      }
+    }
+    return undefined;
   };
+
+  const getVariantColor = (v) => {
+    return v.color || getAttr(v, "color") || getAttr(v, "Color");
+  };
+
+  const getVariantSize = (v) => {
+    return v.size || getAttr(v, "size") || getAttr(v, "Size");
+  };
+
+  // Derive extra attributes from variants
+  const extraAttributes = React.useMemo(() => {
+    const attrMap = {};
+
+    const variantsList = product?.variants || product?.varients || [];
+    if (product && Array.isArray(variantsList)) {
+      variantsList.forEach((v) => {
+        if (v.attributes) {
+          let entries = [];
+          if (v.attributes instanceof Map) {
+            entries = Array.from(v.attributes.entries());
+          } else if (typeof v.attributes.entries === "function") {
+            entries = Array.from(v.attributes.entries());
+          } else if (typeof v.attributes === "object") {
+            entries = Object.entries(v.attributes);
+          }
+
+          entries.forEach(([key, val]) => {
+            const kLower = key.toLowerCase();
+            if (kLower === "color" || kLower === "size") return;
+
+            if (val) {
+              const valStr = String(val).trim();
+              if (!attrMap[key]) {
+                attrMap[key] = new Set();
+              }
+              attrMap[key].add(valStr);
+            }
+          });
+        }
+      });
+    }
+
+    const result = {};
+    for (const [key, valSet] of Object.entries(attrMap)) {
+      result[key] = Array.from(valSet);
+    }
+    return result;
+  }, [product]);
+
+  const resetToInitialCombination = () => {
+    if (product) {
+      if (product.color) {
+        const capitalized = product.color.charAt(0).toUpperCase() + product.color.slice(1).toLowerCase();
+        setSelectedColor(capitalized);
+      } else if (dbColors.length > 0) {
+        setSelectedColor(dbColors[0].name);
+      }
+
+      if (dbSizes.length > 0) {
+        setSelectedSize(dbSizes[0]);
+      } else if (product.size) {
+        setSelectedSize(product.size.toUpperCase());
+      }
+
+      const initialAttrs = {};
+      for (const [key, vals] of Object.entries(extraAttributes)) {
+        if (vals.length > 0) {
+          initialAttrs[key] = vals[0];
+        }
+      }
+      setSelectedAttrs(initialAttrs);
+    }
+  };
+
+  // Set default selection based on base product or first variant options
+  useEffect(() => {
+    resetToInitialCombination();
+  }, [product, dbColors, dbSizes, extraAttributes]);
 
   const handleSelectColor = (colorName) => {
     setSelectedColor(colorName);
 
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
-    if (colorName.toLowerCase() === "default" && selectedSize.toLowerCase() === "default") return;
 
+    // Check if combination (colorName + size + extra attributes) exists
     const hasMatch = list.some((v) => {
-      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
-      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
-      return colorVal.toLowerCase() === colorName.toLowerCase() && sizeVal.toLowerCase() === selectedSize.toLowerCase();
+      const vColor = getVariantColor(v);
+      const vSize = getVariantSize(v);
+      const matchColor = vColor && vColor.toLowerCase() === colorName.toLowerCase();
+      const matchSize = vSize && String(vSize).toLowerCase() === selectedSize.toLowerCase();
+      if (!matchColor || !matchSize) return false;
+
+      for (const [k, selVal] of Object.entries(selectedAttrs)) {
+        if (!selVal) continue;
+        const vVal = getAttr(v, k);
+        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
+      }
+      return true;
     });
 
     if (!hasMatch) {
       const matchingVariant = list.find((v) => {
-        const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
-        return colorVal.toLowerCase() === colorName.toLowerCase();
+        const vColor = getVariantColor(v);
+        return vColor && vColor.toLowerCase() === colorName.toLowerCase();
       });
 
       if (matchingVariant) {
-        let sizeVal = getAttr(matchingVariant, "size") || getAttr(matchingVariant, "Size") || "Default";
-        if (sizeVal !== "Default") {
-          sizeVal = String(sizeVal).trim().toUpperCase();
-        }
-        setSelectedSize(sizeVal);
+        const sizeVal = getVariantSize(matchingVariant);
+        if (sizeVal) setSelectedSize(String(sizeVal).toUpperCase());
+        
+        const newAttrs = {};
+        Object.keys(extraAttributes).forEach((key) => {
+          const val = getAttr(matchingVariant, key);
+          if (val) newAttrs[key] = val;
+        });
+        setSelectedAttrs(newAttrs);
       } else {
-        setSelectedColor("Default");
-        setSelectedSize("Default");
+        resetToInitialCombination();
       }
     }
   };
@@ -761,52 +910,128 @@ const ProductDetail = () => {
 
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
-    if (selectedColor.toLowerCase() === "default" && sizeName.toLowerCase() === "default") return;
 
+    // Check if combination (color + sizeName + extra attributes) exists
     const hasMatch = list.some((v) => {
-      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
-      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
-      return colorVal.toLowerCase() === selectedColor.toLowerCase() && sizeVal.toLowerCase() === sizeName.toLowerCase();
+      const vColor = getVariantColor(v);
+      const vSize = getVariantSize(v);
+      const matchColor = vColor && vColor.toLowerCase() === selectedColor.toLowerCase();
+      const matchSize = vSize && String(vSize).toLowerCase() === sizeName.toLowerCase();
+      if (!matchColor || !matchSize) return false;
+
+      for (const [k, selVal] of Object.entries(selectedAttrs)) {
+        if (!selVal) continue;
+        const vVal = getAttr(v, k);
+        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
+      }
+      return true;
     });
 
     if (!hasMatch) {
       const matchingVariant = list.find((v) => {
-        const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
-        return sizeVal.toLowerCase() === sizeName.toLowerCase();
+        const vSize = getVariantSize(v);
+        return vSize && String(vSize).toLowerCase() === sizeName.toLowerCase();
       });
 
       if (matchingVariant) {
-        let colorVal = getAttr(matchingVariant, "color") || getAttr(matchingVariant, "Color") || "Default";
-        if (colorVal !== "Default") {
-          const strVal = String(colorVal).trim();
-          colorVal = strVal.charAt(0).toUpperCase() + strVal.slice(1).toLowerCase();
+        const vColor = getVariantColor(matchingVariant);
+        if (vColor) {
+          const capitalized = vColor.charAt(0).toUpperCase() + vColor.slice(1).toLowerCase();
+          setSelectedColor(capitalized);
         }
-        setSelectedColor(colorVal);
+        
+        const newAttrs = {};
+        Object.keys(extraAttributes).forEach((key) => {
+          const val = getAttr(matchingVariant, key);
+          if (val) newAttrs[key] = val;
+        });
+        setSelectedAttrs(newAttrs);
       } else {
-        setSelectedColor("Default");
-        setSelectedSize("Default");
+        resetToInitialCombination();
       }
     }
   };
 
-  // Find variant matching currently selected color & size
+  const handleSelectAttr = (attrKey, attrVal) => {
+    const newAttrs = { ...selectedAttrs, [attrKey]: attrVal };
+    setSelectedAttrs(newAttrs);
+
+    const list = product?.variants || product?.varients || [];
+    if (list.length === 0) return;
+
+    // Check if combination (color + size + new attributes) exists
+    const hasMatch = list.some((v) => {
+      const vColor = getVariantColor(v);
+      const vSize = getVariantSize(v);
+      const matchColor = vColor && vColor.toLowerCase() === selectedColor.toLowerCase();
+      const matchSize = vSize && String(vSize).toLowerCase() === selectedSize.toLowerCase();
+      if (!matchColor || !matchSize) return false;
+
+      for (const [k, selVal] of Object.entries(newAttrs)) {
+        if (!selVal) continue;
+        const vVal = getAttr(v, k);
+        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
+      }
+      return true;
+    });
+
+    if (!hasMatch) {
+      const matchingVariant = list.find((v) => {
+        const vVal = getAttr(v, attrKey);
+        return vVal && String(vVal).toLowerCase() === String(attrVal).toLowerCase();
+      });
+
+      if (matchingVariant) {
+        const vColor = getVariantColor(matchingVariant);
+        if (vColor) {
+          const capitalized = vColor.charAt(0).toUpperCase() + vColor.slice(1).toLowerCase();
+          setSelectedColor(capitalized);
+        }
+        const sizeVal = getVariantSize(matchingVariant);
+        if (sizeVal) setSelectedSize(String(sizeVal).toUpperCase());
+        
+        const resolvedAttrs = { [attrKey]: attrVal };
+        Object.keys(extraAttributes).forEach((key) => {
+          if (key !== attrKey) {
+            const val = getAttr(matchingVariant, key);
+            if (val) resolvedAttrs[key] = val;
+          }
+        });
+        setSelectedAttrs(resolvedAttrs);
+      } else {
+        resetToInitialCombination();
+      }
+    }
+  };
+
+  // Find variant matching currently selected combination
   const activeVariant = React.useMemo(() => {
     const list = product?.variants || product?.varients;
     if (!product || !Array.isArray(list)) return null;
-    if (selectedColor.toLowerCase() === "default" && selectedSize.toLowerCase() === "default") return null;
 
     return list.find((v) => {
-      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
-      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
+      const vColor = getVariantColor(v);
+      const vSize = getVariantSize(v);
 
-      const matchColor = selectedColor.toLowerCase() === "default" ? colorVal.toLowerCase() === "default" : colorVal.toLowerCase() === selectedColor.toLowerCase();
-      const matchSize = selectedSize.toLowerCase() === "default" ? sizeVal.toLowerCase() === "default" : sizeVal.toLowerCase() === selectedSize.toLowerCase();
+      const matchColor = !selectedColor || !vColor || vColor.toLowerCase() === selectedColor.toLowerCase();
+      const matchSize = !selectedSize || !vSize || String(vSize).toLowerCase() === selectedSize.toLowerCase();
+      if (!matchColor || !matchSize) return false;
 
-      return matchColor && matchSize;
+      for (const [k, selVal] of Object.entries(selectedAttrs)) {
+        if (!selVal) continue;
+        const vVal = getAttr(v, k);
+        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
+      }
+
+      return true;
     });
-  }, [product, selectedColor, selectedSize]);
+  }, [product, selectedColor, selectedSize, selectedAttrs]);
 
   const sizes = dbSizes.length ? dbSizes : ["Free Size"];
+
+  // Calculate stock status
+  const stock = activeVariant ? (activeVariant.stock ?? 0) : (product?.stock ?? 0);
+  const isOutOfStock = stock <= 0;
 
   // Use variant specific price if defined, otherwise fall back to product base price
   const price = activeVariant?.price ?? (product?.price?.amount ?? 0);
@@ -937,7 +1162,6 @@ const ProductDetail = () => {
                   </p>
                   <div className="flex items-center gap-2.5 flex-wrap">
                     {dbColors.map(({ name, hex }) => {
-                      const isDefault = name === "Default";
                       const isActive = selectedColor === name;
                       const activeColor = isLight ? "#8b6914" : "#c9a227";
                       return (
@@ -947,26 +1171,18 @@ const ProductDetail = () => {
                           onClick={() => handleSelectColor(name)}
                           className="color-swatch w-7 h-7 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
                           style={{
-                            backgroundColor: isDefault
-                              ? (isLight ? "rgba(28,20,8,0.08)" : "rgba(255,255,255,0.08)")
-                              : hex,
+                            backgroundColor: hex,
                             border: isActive
                               ? `3px solid ${activeColor}`
-                              : isDefault
-                                ? (isLight ? "1.5px dashed rgba(28,20,8,0.3)" : "1.5px dashed rgba(255,255,255,0.3)")
-                                : "3px solid transparent",
+                              : "3px solid transparent",
                             boxShadow: isActive
                               ? `0 0 0 2px ${activeColor}`
-                              : isDefault
-                                ? "none"
-                                : "0 0 0 1.5px rgba(100,80,40,0.45)",
+                              : "0 0 0 1.5px rgba(100,80,40,0.45)",
                             color: isActive
                               ? activeColor
                               : (isLight ? "rgba(28,20,8,0.6)" : "rgba(255,255,255,0.6)"),
                           }}
-                        >
-                          {isDefault && <HangerIcon size={12} />}
-                        </button>
+                        />
                       );
                     })}
                   </div>
@@ -974,7 +1190,7 @@ const ProductDetail = () => {
               )}
 
               {/* ── Size Selector ── */}
-              {dbSizes.length > 0 && (
+              {sizes.length > 0 && (
                 <div className="mb-5">
                   <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
                     Size: <span className="pd-text-main font-semibold">{selectedSize}</span>
@@ -992,6 +1208,30 @@ const ProductDetail = () => {
                   </div>
                 </div>
               )}
+
+              {/* ── Dynamic Attribute Selectors ── */}
+              {Object.entries(extraAttributes).map(([key, vals]) => {
+                if (vals.length === 0) return null;
+                const selectedVal = selectedAttrs[key];
+                return (
+                  <div key={key} className="mb-5">
+                    <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
+                      {key}: <span className="pd-text-main font-semibold">{selectedVal}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {vals.map((val) => (
+                        <button
+                          key={val}
+                          className={`pd-size-btn ${selectedVal === val ? "selected" : ""}`}
+                          onClick={() => handleSelectAttr(key, val)}
+                        >
+                          {val}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
 
               {/* ── Quantity ── */}
               <div className="flex items-center gap-4 mb-6">
@@ -1033,14 +1273,59 @@ const ProductDetail = () => {
                 </button>
               </div>
 
+              {/* Stock Status Indicator */}
+              <div className="mb-4">
+                {isOutOfStock ? (
+                  <span
+                    className="text-[11px] font-bold tracking-wider px-2.5 py-1.5 border"
+                    style={{
+                      backgroundColor: isLight ? "rgba(220, 38, 38, 0.08)" : "rgba(220, 38, 38, 0.15)",
+                      color: isLight ? "#dc2626" : "#f87171",
+                      borderColor: isLight ? "rgba(220, 38, 38, 0.2)" : "rgba(220, 38, 38, 0.3)"
+                    }}
+                  >
+                    OUT OF STOCK
+                  </span>
+                ) : stock <= 5 ? (
+                  <span
+                    className="text-[11px] font-bold tracking-wider px-2.5 py-1.5 border"
+                    style={{
+                      backgroundColor: isLight ? "rgba(217, 119, 6, 0.08)" : "rgba(217, 119, 6, 0.15)",
+                      color: isLight ? "#d97706" : "#fbbf24",
+                      borderColor: isLight ? "rgba(217, 119, 6, 0.2)" : "rgba(217, 119, 6, 0.3)"
+                    }}
+                  >
+                    ONLY {stock} LEFT IN STOCK!
+                  </span>
+                ) : (
+                  <span
+                    className="text-[11px] font-bold tracking-wider px-2.5 py-1.5 border"
+                    style={{
+                      backgroundColor: isLight ? "rgba(22, 163, 74, 0.08)" : "rgba(22, 163, 74, 0.15)",
+                      color: isLight ? "#16a34a" : "#4ade80",
+                      borderColor: isLight ? "rgba(22, 163, 74, 0.2)" : "rgba(22, 163, 74, 0.3)"
+                    }}
+                  >
+                    IN STOCK ({stock} available)
+                  </span>
+                )}
+              </div>
+
               {/* ── CTA Buttons ── */}
               <div className="flex gap-3 mb-2">
                 <button
                   onClick={handleAddToCart}
-                  className="pd-gold-btn flex-1 py-3.5 px-6 flex items-center justify-center gap-2 transition-all"
+                  disabled={isOutOfStock}
+                  className={`flex-1 py-3.5 px-6 flex items-center justify-center gap-2 transition-all ${
+                    isOutOfStock
+                      ? "opacity-50 cursor-not-allowed bg-neutral-800 text-neutral-400 border border-neutral-700"
+                      : "pd-gold-btn"
+                  }`}
                   style={{ minHeight: 48 }}
                 >
-                  {addedToCart ? (
+                  {isOutOfStock ? (
+                    "OUT OF STOCK"
+                  ) : addedToCart ? (
                     <>
                       <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
@@ -1055,7 +1340,12 @@ const ProductDetail = () => {
                   )}
                 </button>
                 <button
-                  className="pd-ghost-btn flex-1 py-3.5 px-6"
+                  disabled={isOutOfStock}
+                  className={`flex-1 py-3.5 px-6 transition-all ${
+                    isOutOfStock
+                      ? "opacity-50 cursor-not-allowed bg-neutral-900 text-neutral-500 border border-neutral-800"
+                      : "pd-ghost-btn"
+                  }`}
                   style={{ minHeight: 48 }}
                 >
                   Buy Now

@@ -1,5 +1,5 @@
 import { setError } from "../../auth/state/auth.slice";
-import { createProduct, getSellerProducts, getAllProducts, getProductDetail, addVarients } from "../services/product.api";
+import { createProduct, getSellerProducts, getAllProducts, getProductDetail, addVariants } from "../services/product.api";
 import { setSellerProducts, setAllProducts, setProductDetail, clearProductDetail, setLoading } from "../state/product.slice";
 import { useDispatch } from "react-redux";
 export const useProduct = () => {
@@ -34,9 +34,9 @@ export const useProduct = () => {
         }
     }
 
-    const handleAddVarients = async (productId, formData) => {
-        const data = await addVarients(productId, formData)
-        return data.varients
+    const handleAddVariants = async (productId, formData) => {
+        const data = await addVariants(productId, formData)
+        return data.variants
     }
-    return { handleCreateProduct, handleAddVarients, handleGetSellerProducts, handleGetAllProducts, handleGetProductDetail, };
+    return { handleCreateProduct, handleAddVariants, handleGetSellerProducts, handleGetAllProducts, handleGetProductDetail, };
 };

@@ -1,7 +1,7 @@
 import productModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.services.js";
 export const createProduct = async (req, res) => {
-    const { title, description, priceAmount, priceCurrency } = req.body;
+    const { title, description, priceAmount, priceCurrency, color, stock,size,} = req.body;
 
     const seller = req.user
 
@@ -16,6 +16,9 @@ export const createProduct = async (req, res) => {
     const product = await productModel.create({
         title,
         description,
+        color,
+        size,
+        stock: Number(stock),
         price: {
             amount: priceAmount,
             currency: priceCurrency || "INR"
@@ -59,24 +62,23 @@ export const getProductDetail = async (req, res) => {
         productDetail
     })
 }
-// add product varient routes
+// add product variant routes
 
-export const addVarients = async (req, res) => {
+export const addVariants = async (req, res) => {
     const seller = req.user._id
-    const { proudtId } = req.params
+    const { productId } = req.params
     const product = await productModel.findOne({
-        _id: proudtId,
+        _id: productId,
         seller: seller
     })
     if (!product) {
         return res.status(404).json({
-            message: "NO product Found",
-            success: false,
-            sucess: false
+            message: "No product found",
+            success: false
         })
     }
 
-    const { price, stock } = req.body
+    const { price, stock, color, size } = req.body;
     const files = req.files
     const images = []
     if (files && files.length !== 0) {
@@ -90,19 +92,20 @@ export const addVarients = async (req, res) => {
     }
     const attributes = req.body.attributes ? JSON.parse(req.body.attributes) : {}
 
-    product.varients.push({
+    product.variants.push({
         images,
         price: price || product.price.amount,
         stock: Number(stock) || 0,
+        color,
+        size,
         attributes
     })
 
     await product.save();
 
     res.status(201).json({
-        message: "Varients added successfully",
+        message: "Variants added successfully",
         success: true,
-        sucess: true,
-        varients: product.varients
+        variants: product.variants
     })
 }

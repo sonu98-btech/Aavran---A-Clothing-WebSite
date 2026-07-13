@@ -283,7 +283,7 @@ const ProductCard = ({ product }) => {
           >
             <Icon d={ICONS.edit} size={14} color="currentColor" />
           </button>
-          
+
           {/* Delete button */}
           <button
             aria-label="Delete product"
@@ -308,7 +308,7 @@ const ProductCard = ({ product }) => {
             ₹{price.toLocaleString('en-IN')}
           </p>
         </div>
-        
+
         {/* Add Variant Button */}
         <button
           onClick={(e) => { e.stopPropagation(); navigate(`/seller/product/${product._id}?addVariant=true`); }}

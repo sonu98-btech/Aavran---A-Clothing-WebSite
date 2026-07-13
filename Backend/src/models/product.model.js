@@ -8,6 +8,24 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    color:{
+        type:String,
+        required:true
+    },
+    size:{
+        type:String,
+        required:true
+    },
+    stock:{
+        type:Number,
+        required:true
+    },
+    images: [{
+        url: {
+            type: String,
+            required: true
+        }
+    }],
     price: {
         amount: {
             type: Number,
@@ -25,13 +43,7 @@ const productSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    images: [{
-        url: {
-            type: String,
-            required: true
-        }
-    }],
-    varients: [{
+    variants: [{
         images: [
             {
                 url: {
@@ -40,6 +52,14 @@ const productSchema = new mongoose.Schema({
                 }
             }
         ],
+        size: {
+            type: String,
+            required: true
+        },
+        color: {
+            type: String,
+            required: true
+        },
         stock: {
             type: Number,
             default: 0
@@ -50,7 +70,6 @@ const productSchema = new mongoose.Schema({
         attributes: {
             type: Map,
             of: String
-
         }
     }]
 }, { timestamps: true })
