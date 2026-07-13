@@ -840,19 +840,13 @@ const ProductDetail = () => {
         setSelectedColor(dbColors[0].name);
       }
 
-      if (dbSizes.length > 0) {
-        setSelectedSize(dbSizes[0]);
-      } else if (product.size) {
+      if (product.size) {
         setSelectedSize(product.size.toUpperCase());
+      } else if (dbSizes.length > 0) {
+        setSelectedSize(dbSizes[0]);
       }
 
-      const initialAttrs = {};
-      for (const [key, vals] of Object.entries(extraAttributes)) {
-        if (vals.length > 0) {
-          initialAttrs[key] = vals[0];
-        }
-      }
-      setSelectedAttrs(initialAttrs);
+      setSelectedAttrs({});
     }
   };
 
