@@ -377,25 +377,25 @@ const ImageGallery = ({ images }) => {
       <div className="flex flex-col gap-2 flex-shrink-0">
         {allUrls.length === 0
           ? Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="pd-thumb-btn w-[64px] h-[80px] border bg-white/5 dark:bg-white/3 flex items-center justify-center"
-                style={{ borderColor: "rgba(255,255,255,0.1)" }}
-              />
-            ))
+            <div
+              key={i}
+              className="pd-thumb-btn w-[64px] h-[80px] border bg-white/5 dark:bg-white/3 flex items-center justify-center"
+              style={{ borderColor: "rgba(255,255,255,0.1)" }}
+            />
+          ))
           : allUrls.slice(0, 5).map((url, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveIdx(i)}
-                className={`pd-thumb-btn w-[64px] h-[80px] overflow-hidden border-2 transition-all duration-200 ${activeIdx === i ? "active" : ""}`}
-                style={{
-                  borderColor: activeIdx === i ? "#c9a227" : "rgba(255,255,255,0.12)",
-                  opacity: activeIdx === i ? 1 : 0.65,
-                }}
-              >
-                <img src={url} alt={`Thumb ${i + 1}`} className="w-full h-full object-cover" />
-              </button>
-            ))}
+            <button
+              key={i}
+              onClick={() => setActiveIdx(i)}
+              className={`pd-thumb-btn w-[64px] h-[80px] overflow-hidden border-2 transition-all duration-200 ${activeIdx === i ? "active" : ""}`}
+              style={{
+                borderColor: activeIdx === i ? "#c9a227" : "rgba(255,255,255,0.12)",
+                opacity: activeIdx === i ? 1 : 0.65,
+              }}
+            >
+              <img src={url} alt={`Thumb ${i + 1}`} className="w-full h-full object-cover" />
+            </button>
+          ))}
       </div>
 
       {/* Main image */}
@@ -566,7 +566,7 @@ const TabSection = ({ product }) => {
             <span className="pd-text-subtle text-[11px]">{r.date}</span>
           </div>
           <div className="flex items-center gap-0.5 mb-1" style={{ color: "#c9a227" }}>
-            {[1,2,3,4,5].map((s) => <StarIcon key={s} filled={s <= r.rating} />)}
+            {[1, 2, 3, 4, 5].map((s) => <StarIcon key={s} filled={s <= r.rating} />)}
           </div>
           <p className="pd-text-muted text-[13px] leading-relaxed">{r.comment}</p>
         </div>
@@ -650,20 +650,22 @@ const ProductDetail = () => {
     if (product && Array.isArray(variantsList)) {
       variantsList.forEach((v) => {
         if (v.attributes) {
-          // Mongoose Maps use .get() and might not expose properties directly on Object.entries.
-          // Let's resolve the raw attributes entries safely
-          const entries = v.attributes instanceof Map 
-            ? Array.from(v.attributes.entries()) 
+          const entries = v.attributes instanceof Map
+            ? Array.from(v.attributes.entries())
             : typeof v.attributes.entries === "function"
               ? Array.from(v.attributes.entries())
               : Object.entries(v.attributes);
 
           entries.forEach(([key, val]) => {
             const kLower = key.toLowerCase();
-            if (kLower === "size") {
-              sizeSet.add(val);
-            } else if (kLower === "color") {
-              colorSet.add(val);
+            if (val) {
+              const valStr = String(val).trim();
+              if (kLower === "size") {
+                sizeSet.add(valStr.toUpperCase());
+              } else if (kLower === "color") {
+                const capitalized = valStr.charAt(0).toUpperCase() + valStr.slice(1).toLowerCase();
+                colorSet.add(capitalized);
+              }
             }
           });
         }
@@ -727,22 +729,25 @@ const ProductDetail = () => {
 
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
-    if (colorName === "Default" && selectedSize === "Default") return;
+    if (colorName.toLowerCase() === "default" && selectedSize.toLowerCase() === "default") return;
 
     const hasMatch = list.some((v) => {
-      const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
-      const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
-      return colorVal === colorName && sizeVal === selectedSize;
+      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
+      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
+      return colorVal.toLowerCase() === colorName.toLowerCase() && sizeVal.toLowerCase() === selectedSize.toLowerCase();
     });
 
     if (!hasMatch) {
       const matchingVariant = list.find((v) => {
-        const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
-        return colorVal === colorName;
+        const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
+        return colorVal.toLowerCase() === colorName.toLowerCase();
       });
 
       if (matchingVariant) {
-        const sizeVal = getAttr(matchingVariant, "size") || getAttr(matchingVariant, "Size") || "Default";
+        let sizeVal = getAttr(matchingVariant, "size") || getAttr(matchingVariant, "Size") || "Default";
+        if (sizeVal !== "Default") {
+          sizeVal = String(sizeVal).trim().toUpperCase();
+        }
         setSelectedSize(sizeVal);
       } else {
         setSelectedColor("Default");
@@ -756,22 +761,26 @@ const ProductDetail = () => {
 
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
-    if (selectedColor === "Default" && sizeName === "Default") return;
+    if (selectedColor.toLowerCase() === "default" && sizeName.toLowerCase() === "default") return;
 
     const hasMatch = list.some((v) => {
-      const colorVal = getAttr(v, "color") || getAttr(v, "Color") || "Default";
-      const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
-      return colorVal === selectedColor && sizeVal === sizeName;
+      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
+      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
+      return colorVal.toLowerCase() === selectedColor.toLowerCase() && sizeVal.toLowerCase() === sizeName.toLowerCase();
     });
 
     if (!hasMatch) {
       const matchingVariant = list.find((v) => {
-        const sizeVal = getAttr(v, "size") || getAttr(v, "Size") || "Default";
-        return sizeVal === sizeName;
+        const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
+        return sizeVal.toLowerCase() === sizeName.toLowerCase();
       });
 
       if (matchingVariant) {
-        const colorVal = getAttr(matchingVariant, "color") || getAttr(matchingVariant, "Color") || "Default";
+        let colorVal = getAttr(matchingVariant, "color") || getAttr(matchingVariant, "Color") || "Default";
+        if (colorVal !== "Default") {
+          const strVal = String(colorVal).trim();
+          colorVal = strVal.charAt(0).toUpperCase() + strVal.slice(1).toLowerCase();
+        }
         setSelectedColor(colorVal);
       } else {
         setSelectedColor("Default");
@@ -784,21 +793,21 @@ const ProductDetail = () => {
   const activeVariant = React.useMemo(() => {
     const list = product?.variants || product?.varients;
     if (!product || !Array.isArray(list)) return null;
-    if (selectedColor === "Default" && selectedSize === "Default") return null;
+    if (selectedColor.toLowerCase() === "default" && selectedSize.toLowerCase() === "default") return null;
 
     return list.find((v) => {
-      const colorVal = getAttr(v, "color") || getAttr(v, "Color");
-      const sizeVal = getAttr(v, "size") || getAttr(v, "Size");
+      const colorVal = String(getAttr(v, "color") || getAttr(v, "Color") || "Default").trim();
+      const sizeVal = String(getAttr(v, "size") || getAttr(v, "Size") || "Default").trim();
 
-      const matchColor = selectedColor === "Default" ? !colorVal : colorVal === selectedColor;
-      const matchSize = selectedSize === "Default" ? !sizeVal : sizeVal === selectedSize;
+      const matchColor = selectedColor.toLowerCase() === "default" ? colorVal.toLowerCase() === "default" : colorVal.toLowerCase() === selectedColor.toLowerCase();
+      const matchSize = selectedSize.toLowerCase() === "default" ? sizeVal.toLowerCase() === "default" : sizeVal.toLowerCase() === selectedSize.toLowerCase();
 
       return matchColor && matchSize;
     });
   }, [product, selectedColor, selectedSize]);
 
   const sizes = dbSizes.length ? dbSizes : ["Free Size"];
-  
+
   // Use variant specific price if defined, otherwise fall back to product base price
   const price = activeVariant?.price ?? (product?.price?.amount ?? 0);
   const currency = product?.price?.currency ?? "INR";

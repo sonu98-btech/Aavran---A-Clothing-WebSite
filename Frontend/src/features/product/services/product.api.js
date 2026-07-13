@@ -26,10 +26,6 @@ export const getProductDetail = async (productId) => {
 // add product varients 
 
 export const addVarients = async (productId, formData) => {
-    const response = await productApiInstance.post(`/${productId}/varients`, formData, {
-        headers: {
-            "Content-Type": "multipart/form-data"
-        }
-    })
+    const response = await productApiInstance.post(`/${productId}/varients`, formData, )
     return response.data
 }
