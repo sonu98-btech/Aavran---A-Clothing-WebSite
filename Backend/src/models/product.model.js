@@ -4,34 +4,56 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description:{
+    description: {
         type: String,
         required: true
     },
-    price:{
-        amount:{
+    price: {
+        amount: {
             type: Number,
             required: true
         },
-        currency:{
+        currency: {
             type: String,
-            enum:["USD","EUR","GBP","INR","JPY"],
-            default:"INR",
+            enum: ["USD", "EUR", "GBP", "INR", "JPY"],
+            default: "INR",
             required: true
         }
     },
-    seller:{
+    seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-    images:[{
-        url:{
+    images: [{
+        url: {
             type: String,
             required: true
         }
-    }]
-},{timestamps:true})
+    }],
+    varients: [{
+        images: [
+            {
+                url: {
+                    type: String,
+                    required: true
+                }
+            }
+        ],
+        stock: {
+            type: Number,
+            default: 0
+        },
+        price: {
+            type: Number,
+        },
+        attributes: {
+            type: Map,
+            of: String
 
-const productModel = mongoose.model("Product",productSchema)
+        }
+    }]
+}, { timestamps: true })
+
+const productModel = mongoose.model("Product", productSchema)
 export default productModel

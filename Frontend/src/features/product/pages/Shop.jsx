@@ -457,13 +457,13 @@ const Shop = () => {
           {!loading && filteredProducts.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-9">
               {filteredProducts.map((product) => (
-                  
-                <Link to ={`/shop/${product._id}`}key={product._id} >
-                <ProductCard
-                  product={product}
-                  wishlisted={wishlistedIds.includes(product._id)}
-                  onToggleWishlist={toggleWishlist}
-                />
+
+                <Link to={`/shop/${product._id}`} key={product._id} >
+                  <ProductCard
+                    product={product}
+                    wishlisted={wishlistedIds.includes(product._id)}
+                    onToggleWishlist={toggleWishlist}
+                  />
                 </Link>
               ))}
             </div>

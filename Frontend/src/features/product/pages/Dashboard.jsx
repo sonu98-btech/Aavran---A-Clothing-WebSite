@@ -232,115 +232,92 @@ const StatCard = ({ label, value, iconKey, delay, dark }) => {
 };
 
 /* ─── Product Card ──────────────────────────────────────────────────────────── */
-const ProductCard = ({ product, dark, delay }) => {
-  const [imgErr, setImgErr] = useState(false);
-  const imageUrl = product.images?.[0]?.url;
+const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+  const [imgIndex, setImgIndex] = useState(0);
+  const allImageUrls = (product.images || []).flatMap(img =>
+    (img.url || '').split(' ~ ').map(u => u.trim()).filter(Boolean)
+  );
+  const images = allImageUrls;
   const price = product.price?.amount ?? 0;
-  const currency = product.price?.currency ?? 'INR';
 
   return (
-    <div
-      className={`card-anim ${dark ? 'glass-card-dark' : 'glass-card-light'}`}
-      style={{
-        borderRadius: '16px', overflow: 'hidden',
-        display: 'flex', flexDirection: 'column',
-        transition: 'all 0.3s ease',
-        animationDelay: `${delay}s`,
-        boxShadow: dark ? '0 8px 40px rgba(0,0,0,0.4)' : undefined,
-        position: 'relative',
-      }}
+    <article
+      className="group flex flex-col cursor-pointer relative"
+      onClick={() => navigate(`/seller/product/${product._id}`)}
+      onMouseEnter={() => images.length > 1 && setImgIndex(1)}
+      onMouseLeave={() => setImgIndex(0)}
     >
-      {/* Top gold accent */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '1px', zIndex: 2,
-        background: 'linear-gradient(90deg, transparent 0%, #c9a227 30%, #ecc246 50%, #c9a227 70%, transparent 100%)',
-        animation: 'borderGlow 3s ease-in-out infinite',
-      }} />
-
-      {/* Image */}
-      <div style={{ height: '210px', overflow: 'hidden', background: dark ? 'rgba(255,255,255,0.03)' : 'rgba(201,162,39,0.04)', position: 'relative' }}>
-        {imageUrl && !imgErr ? (
-          <img src={imageUrl} alt={product.title} className="prod-img"
-            onError={() => setImgErr(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      {/* ── Image box ── */}
+      <div className="relative overflow-hidden bg-[#ece8e0] dark:bg-[#14141e] aspect-[3/4]">
+        {images.length > 0 ? (
+          <>
+            {/* primary */}
+            <img
+              src={images[0]}
+              alt={product.title}
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imgIndex === 0 ? 'opacity-100' : 'opacity-0'}`}
+            />
+            {/* secondary (hover) */}
+            {images[1] && (
+              <img
+                src={images[1]}
+                alt={product.title}
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imgIndex === 1 ? 'opacity-100' : 'opacity-0'}`}
+              />
+            )}
+          </>
         ) : (
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <Icon d={ICONS.package} size={44} color="rgba(201,162,39,0.3)" />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(201,162,39,0.4)' }}>No Image</span>
+          <div className="flex items-center justify-center h-full text-[#1c1408]/20 dark:text-white/20 text-xs tracking-widest uppercase">
+            No Image
           </div>
         )}
-      </div>
 
-      {/* Body */}
-      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}>
-        {/* Title + Price side by side */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-          <h4 style={{
-            fontFamily: 'Inter, sans-serif', fontSize: '15px', fontWeight: '700',
-            color: dark ? '#fff' : '#0a0a0f', margin: 0,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-          }}>
-            {product.title}
-          </h4>
-          {/* Price badge next to title */}
-          <span style={{
-            fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 700,
-            letterSpacing: '0.05em', color: '#c9a227', whiteSpace: 'nowrap', flexShrink: 0,
-            background: dark ? 'rgba(201,162,39,0.12)' : 'rgba(201,162,39,0.1)',
-            border: '1px solid rgba(201,162,39,0.28)',
-            borderRadius: '999px', padding: '3px 10px',
-          }}>₹{price} {currency}</span>
-        </div>
-
-        <p style={{
-          fontFamily: 'Inter, sans-serif', fontSize: '12.5px', lineHeight: '1.6',
-          color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(10,10,15,0.45)',
-          margin: 0, display: '-webkit-box', WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical', overflow: 'hidden', flexGrow: 1,
-        }}>
-          {product.description || 'No description provided.'}
-        </p>
-
-        {/* Date */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '5px',
-          color: dark ? 'rgba(255,255,255,0.25)' : 'rgba(10,10,15,0.35)',
-          fontFamily: 'Inter, sans-serif', fontSize: '10.5px', letterSpacing: '0.08em',
-        }}>
-          <Icon d={ICONS.calendar} size={12} color="currentColor" />
-          Created: {formatDate(product.createdAt)}
-        </div>
-
-        {/* Divider */}
-        <div style={{ height: '1px', background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(10,10,15,0.08)', margin: '4px 0' }} />
-
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        {/* Card Management UI: Edit & Delete buttons */}
+        <div className="absolute top-3 right-3 z-10 flex gap-2">
+          {/* Edit button */}
           <button
-            className={dark ? 'ghost-btn-dark' : 'ghost-btn-light'}
-            style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              padding: '8px 0', borderRadius: '8px', cursor: 'pointer',
-              fontSize: '12px', fontWeight: '600', fontFamily: 'Inter, sans-serif',
-              letterSpacing: '0.06em',
-            }}
+            aria-label="Edit product"
+            onClick={(e) => { e.stopPropagation(); }}
+            className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 bg-white/80 dark:bg-black/50 text-[#1c1408] dark:text-white hover:text-[#8b6914] dark:hover:text-[#c9a227]"
           >
-            <Icon d={ICONS.edit} size={13} color="currentColor" /> Edit
+            <Icon d={ICONS.edit} size={14} color="currentColor" />
           </button>
+          
+          {/* Delete button */}
           <button
-            style={{
-              width: '38px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '8px', cursor: 'pointer', border: '1px solid rgba(220,38,38,0.25)',
-              background: 'transparent', color: '#ef4444', transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.1)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.55)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.25)'; }}
+            aria-label="Delete product"
+            onClick={(e) => { e.stopPropagation(); }}
+            className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm shadow transition-all hover:scale-110 bg-white/80 dark:bg-black/50 text-[#1c1408] dark:text-white hover:text-red-600 dark:hover:text-red-400"
           >
             <Icon d={ICONS.trash} size={14} color="currentColor" />
           </button>
         </div>
       </div>
-    </div>
+
+      {/* ── Info below image ── */}
+      <div className="mt-3 space-y-2">
+        <div className="space-y-0.5">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8b6914]/80 dark:text-[#c9a227]/70">
+            {product.title.split(' ')[0]}
+          </p>
+          <h3 className="text-sm text-[#1c1408] dark:text-white/90 font-normal leading-snug line-clamp-2 h-10 group-hover:text-[#8b6914] dark:group-hover:text-[#c9a227] transition-colors duration-300">
+            {product.title}
+          </h3>
+          <p className="text-sm font-semibold text-[#8b6914] dark:text-[#c9a227] pt-0.5">
+            ₹{price.toLocaleString('en-IN')}
+          </p>
+        </div>
+        
+        {/* Add Variant Button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); navigate(`/seller/product/${product._id}?addVariant=true`); }}
+          className="w-full py-1.5 border border-[#8b6914]/30 hover:border-[#8b6914] dark:border-[#c9a227]/30 dark:hover:border-[#c9a227] text-[10px] font-bold uppercase tracking-widest text-[#8b6914] dark:text-[#c9a227] hover:bg-[#8b6914]/5 dark:hover:bg-[#c9a227]/5 transition-all rounded"
+        >
+          + Add Variant
+        </button>
+      </div>
+    </article>
   );
 };
 
@@ -619,7 +596,10 @@ const Dashboard = () => {
             </div>
 
             {/* Section header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div
+              className="sticky top-0 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 mb-6 mx-[-16px] px-4 sm:mx-[-36px] sm:px-9 border-b border-[#8b6914]/12 dark:border-white/8 transition-all duration-300"
+              style={{ backgroundColor: bg }}
+            >
               <div className="flex items-center gap-3">
                 <div className="decorative-line" style={{ width: '20px', height: '1px' }} />
                 <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(201,162,39,0.75)', margin: 0 }}>
@@ -680,9 +660,9 @@ const Dashboard = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {productList.map((product, i) => (
-                  <ProductCard key={product._id} product={product} dark={dark} delay={i * 0.06} />
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-9">
+                {productList.map((product) => (
+                  <ProductCard key={product._id} product={product} />
                 ))}
               </div>
             )}

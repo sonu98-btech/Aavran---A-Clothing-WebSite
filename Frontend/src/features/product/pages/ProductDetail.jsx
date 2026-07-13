@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router";
 import { useProduct } from "../hooks/use.product";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
+import { useTheme } from "../../../app/ThemeContext";
 
 /* ─── Global Styles ─── */
 const GlobalStyles = () => (
@@ -328,6 +329,13 @@ const HeartIcon = ({ filled = false }) => (
   </svg>
 );
 
+const HangerIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 7V4a2 2 0 1 1 4 0" />
+    <path d="m2 17 8-5.333a3 3 0 0 1 4 0L22 17a1 1 0 0 1-.555 1.778H2.555A1 1 0 0 1 2 17Z" />
+  </svg>
+);
+
 /* ─── Star Rating ─── */
 const StarRating = ({ rating = 4.7, reviews = 128 }) => (
   <div className="flex items-center gap-2">
@@ -621,19 +629,131 @@ const ProductDetail = () => {
   const { id } = useParams();
   const { handleGetProductDetail } = useProduct();
   const product = useSelector((state) => state.product.productDetail);
-  const loading = useSelector((state) => state.auth.loading);
+  const loading = useSelector((state) => state.product.loading);
+  const { theme } = useTheme();
+  const isLight = theme === "light";
 
-  const [selectedColor, setSelectedColor] = useState(colorPalette[0].name);
-  const [selectedSize, setSelectedSize] = useState("Free Size");
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const sizes = product?.sizes?.length ? product.sizes : ["XS", "S", "M", "L", "XL", "Free Size"];
-  const price = product?.price?.amount ?? 0;
+  // Derive sizes and colors from actual product variants present in DB
+  const { dbSizes, dbColors } = React.useMemo(() => {
+    const sizeSet = new Set();
+    const colorSet = new Set();
+
+    const variantsList = product?.variants || product?.varients || [];
+
+    if (product && Array.isArray(variantsList)) {
+      variantsList.forEach((v) => {
+        if (v.attributes) {
+          // Mongoose Maps use .get() and might not expose properties directly on Object.entries.
+          // Let's resolve the raw attributes entries safely
+          const entries = v.attributes instanceof Map 
+            ? Array.from(v.attributes.entries()) 
+            : typeof v.attributes.entries === "function"
+              ? Array.from(v.attributes.entries())
+              : Object.entries(v.attributes);
+
+          entries.forEach(([key, val]) => {
+            const kLower = key.toLowerCase();
+            if (kLower === "size") {
+              sizeSet.add(val);
+            } else if (kLower === "color") {
+              colorSet.add(val);
+            }
+          });
+        }
+      });
+    }
+
+    const colorHexMap = {
+      "beige gold": "#C8A96E",
+      rose: "#F4A0A0",
+      forest: "#3D7A4E",
+      slate: "#7A8FA6",
+      burgundy: "#8C1C3A",
+      pink: "#f9a8d4",
+      green: "#16a34a",
+      brown: "#92400e",
+      maroon: "#881337",
+      cream: "#fef9c3",
+      blue: '#1d4ed8',
+      red: '#dc2626',
+      olive: '#65a30d',
+    };
+
+    const parsedColors = Array.from(colorSet).map((name) => {
+      const normalized = name.toLowerCase().trim();
+      return {
+        name,
+        hex: colorHexMap[normalized] || "#cccccc",
+      };
+    });
+
+    // If variants exist, prepend 'Default' option to let users select base product details
+    const finalSizes = sizeSet.size > 0 ? ["Default", ...Array.from(sizeSet)] : [];
+    const finalColors = colorSet.size > 0 ? [{ name: "Default", hex: "#777777" }, ...parsedColors] : [];
+
+    return {
+      dbSizes: finalSizes,
+      dbColors: finalColors,
+    };
+  }, [product]);
+
+  // Set default selection based on 'Default' config option if present
+  useEffect(() => {
+    if (dbColors.length > 0) {
+      setSelectedColor("Default");
+    }
+  }, [dbColors]);
+
+  useEffect(() => {
+    if (dbSizes.length > 0) {
+      setSelectedSize("Default");
+    }
+  }, [dbSizes]);
+
+  // Find variant matching currently selected color & size
+  const activeVariant = React.useMemo(() => {
+    const list = product?.variants || product?.varients;
+    if (!product || !Array.isArray(list)) return null;
+    if (selectedColor === "Default" || selectedSize === "Default") return null;
+
+    const getAttr = (v, key) => {
+      if (!v.attributes) return undefined;
+      if (typeof v.attributes.get === "function") {
+        return v.attributes.get(key);
+      }
+      return v.attributes[key];
+    };
+
+    return list.find((v) => {
+      const colorVal = getAttr(v, "color") || getAttr(v, "Color");
+      const sizeVal = getAttr(v, "size") || getAttr(v, "Size");
+      const matchC = !selectedColor || colorVal === selectedColor;
+      const matchS = !selectedSize || sizeVal === selectedSize;
+      return matchC && matchS;
+    });
+  }, [product, selectedColor, selectedSize]);
+
+  const sizes = dbSizes.length ? dbSizes : ["Free Size"];
+  
+  // Use variant specific price if defined, otherwise fall back to product base price
+  const price = activeVariant?.price ?? (product?.price?.amount ?? 0);
   const currency = product?.price?.currency ?? "INR";
   const symbol = currency === "INR" ? "₹" : "$";
+
+  // Use variant specific images if they exist, otherwise fall back to base product images
+  const galleryImages = React.useMemo(() => {
+    if (activeVariant && Array.isArray(activeVariant.images) && activeVariant.images.length > 0) {
+      return activeVariant.images;
+    }
+    return product?.images || [];
+  }, [product, activeVariant]);
 
   useEffect(() => {
     setMounted(true);
@@ -708,7 +828,7 @@ const ProductDetail = () => {
 
             {/* ── LEFT: Image Gallery ── */}
             <div className="w-full lg:w-[52%] xl:w-[50%] flex-shrink-0">
-              <ImageGallery images={product?.images || []} />
+              <ImageGallery images={galleryImages} />
             </div>
 
             {/* ── RIGHT: Product Info ── */}
@@ -744,48 +864,68 @@ const ProductDetail = () => {
               </p>
 
               {/* ── Color Selector ── */}
-              <div className="mb-5">
-                <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
-                  Color: <span className="pd-text-main font-semibold">{selectedColor}</span>
-                </p>
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  {colorPalette.map(({ name, hex }) => (
-                    <button
-                      key={name}
-                      title={name}
-                      onClick={() => setSelectedColor(name)}
-                      className="color-swatch w-7 h-7 rounded-full transition-all duration-200 hover:scale-110"
-                      style={{
-                        backgroundColor: hex,
-                        border: selectedColor === name
-                          ? "3px solid #c9a227"
-                          : "3px solid transparent",
-                        boxShadow: selectedColor === name
-                          ? "0 0 0 2px #c9a227"
-                          : "0 0 0 1.5px rgba(100,80,40,0.45)",
-                      }}
-                    />
-                  ))}
+              {dbColors.length > 0 && (
+                <div className="mb-5">
+                  <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
+                    Color: <span className="pd-text-main font-semibold">{selectedColor}</span>
+                  </p>
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    {dbColors.map(({ name, hex }) => {
+                      const isDefault = name === "Default";
+                      const isActive = selectedColor === name;
+                      const activeColor = isLight ? "#8b6914" : "#c9a227";
+                      return (
+                        <button
+                          key={name}
+                          title={name}
+                          onClick={() => setSelectedColor(name)}
+                          className="color-swatch w-7 h-7 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
+                          style={{
+                            backgroundColor: isDefault
+                              ? (isLight ? "rgba(28,20,8,0.08)" : "rgba(255,255,255,0.08)")
+                              : hex,
+                            border: isActive
+                              ? `3px solid ${activeColor}`
+                              : isDefault
+                                ? (isLight ? "1.5px dashed rgba(28,20,8,0.3)" : "1.5px dashed rgba(255,255,255,0.3)")
+                                : "3px solid transparent",
+                            boxShadow: isActive
+                              ? `0 0 0 2px ${activeColor}`
+                              : isDefault
+                                ? "none"
+                                : "0 0 0 1.5px rgba(100,80,40,0.45)",
+                            color: isActive
+                              ? activeColor
+                              : (isLight ? "rgba(28,20,8,0.6)" : "rgba(255,255,255,0.6)"),
+                          }}
+                        >
+                          {isDefault && <HangerIcon size={12} />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* ── Size Selector ── */}
-              <div className="mb-5">
-                <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
-                  Size: <span className="pd-text-main font-semibold">{selectedSize}</span>
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((sz) => (
-                    <button
-                      key={sz}
-                      className={`pd-size-btn ${selectedSize === sz ? "selected" : ""}`}
-                      onClick={() => setSelectedSize(sz)}
-                    >
-                      {sz}
-                    </button>
-                  ))}
+              {dbSizes.length > 0 && (
+                <div className="mb-5">
+                  <p className="pd-text-muted text-[11px] font-semibold uppercase tracking-[0.12em] mb-2.5">
+                    Size: <span className="pd-text-main font-semibold">{selectedSize}</span>
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {sizes.map((sz) => (
+                      <button
+                        key={sz}
+                        className={`pd-size-btn ${selectedSize === sz ? "selected" : ""}`}
+                        onClick={() => setSelectedSize(sz)}
+                      >
+                        {sz}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* ── Quantity ── */}
               <div className="flex items-center gap-4 mb-6">
