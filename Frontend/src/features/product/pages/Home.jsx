@@ -634,7 +634,7 @@ const Home = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ThemeToggle />
             <button className="hm-icon-btn" title="Search" aria-label="Search"><SearchIcon /></button>
-            <button className="hm-icon-btn" title="Cart" aria-label="Cart"><CartIcon /></button>
+            <Link to="/cart" className="hm-icon-btn" title="Cart" aria-label="Cart" style={{ color: 'inherit', display: 'flex', alignItems: 'center' }}><CartIcon /></Link>
             <div style={{
               width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
               background: 'linear-gradient(135deg,#c9a227,#ecc246)',

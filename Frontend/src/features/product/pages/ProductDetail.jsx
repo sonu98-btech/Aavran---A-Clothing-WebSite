@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router";
 import { useProduct } from "../hooks/use.product";
+import { useCart } from "../../cart/hooks/useCart";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
 import { useTheme } from "../../../app/ThemeContext";
 
@@ -637,6 +638,7 @@ const ProductDetail = () => {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
+  const { items: cartItems, handleAddToCart: apiAddToCart, handleGetCart } = useCart();
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedAttrs, setSelectedAttrs] = useState({});
@@ -765,7 +767,7 @@ const ProductDetail = () => {
   const getAttr = (v, key) => {
     if (!v.attributes) return undefined;
     const targetKey = key.toLowerCase();
-    
+
     let attrsObj = {};
     if (v.attributes instanceof Map) {
       attrsObj = Object.fromEntries(v.attributes.entries());
@@ -861,23 +863,23 @@ const ProductDetail = () => {
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
 
-    // Check if combination (colorName + size + extra attributes) exists
-    const hasMatch = list.some((v) => {
+    // Find variant with matching color and current size
+    const exactVariant = list.find((v) => {
       const vColor = getVariantColor(v);
       const vSize = getVariantSize(v);
-      const matchColor = vColor && vColor.toLowerCase() === colorName.toLowerCase();
-      const matchSize = vSize && String(vSize).toLowerCase() === selectedSize.toLowerCase();
-      if (!matchColor || !matchSize) return false;
-
-      for (const [k, selVal] of Object.entries(selectedAttrs)) {
-        if (!selVal) continue;
-        const vVal = getAttr(v, k);
-        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
-      }
-      return true;
+      return vColor && vColor.toLowerCase() === colorName.toLowerCase() &&
+        vSize && String(vSize).toLowerCase() === selectedSize.toLowerCase();
     });
 
-    if (!hasMatch) {
+    if (exactVariant) {
+      const newAttrs = {};
+      Object.keys(extraAttributes).forEach((key) => {
+        const val = getAttr(exactVariant, key);
+        if (val) newAttrs[key] = val;
+      });
+      setSelectedAttrs(newAttrs);
+    } else {
+      // Find any variant matching the new color
       const matchingVariant = list.find((v) => {
         const vColor = getVariantColor(v);
         return vColor && vColor.toLowerCase() === colorName.toLowerCase();
@@ -886,7 +888,7 @@ const ProductDetail = () => {
       if (matchingVariant) {
         const sizeVal = getVariantSize(matchingVariant);
         if (sizeVal) setSelectedSize(String(sizeVal).toUpperCase());
-        
+
         const newAttrs = {};
         Object.keys(extraAttributes).forEach((key) => {
           const val = getAttr(matchingVariant, key);
@@ -894,7 +896,12 @@ const ProductDetail = () => {
         });
         setSelectedAttrs(newAttrs);
       } else {
-        resetToInitialCombination();
+        setSelectedAttrs({});
+        if (product.size) {
+          setSelectedSize(product.size.toUpperCase());
+        } else if (dbSizes.length > 0) {
+          setSelectedSize(dbSizes[0]);
+        }
       }
     }
   };
@@ -905,23 +912,23 @@ const ProductDetail = () => {
     const list = product?.variants || product?.varients || [];
     if (list.length === 0) return;
 
-    // Check if combination (color + sizeName + extra attributes) exists
-    const hasMatch = list.some((v) => {
+    // Find variant with current color and matching size
+    const exactVariant = list.find((v) => {
       const vColor = getVariantColor(v);
       const vSize = getVariantSize(v);
-      const matchColor = vColor && vColor.toLowerCase() === selectedColor.toLowerCase();
-      const matchSize = vSize && String(vSize).toLowerCase() === sizeName.toLowerCase();
-      if (!matchColor || !matchSize) return false;
-
-      for (const [k, selVal] of Object.entries(selectedAttrs)) {
-        if (!selVal) continue;
-        const vVal = getAttr(v, k);
-        if (!vVal || String(vVal).toLowerCase() !== String(selVal).toLowerCase()) return false;
-      }
-      return true;
+      return vColor && vColor.toLowerCase() === selectedColor.toLowerCase() &&
+        vSize && String(vSize).toLowerCase() === sizeName.toLowerCase();
     });
 
-    if (!hasMatch) {
+    if (exactVariant) {
+      const newAttrs = {};
+      Object.keys(extraAttributes).forEach((key) => {
+        const val = getAttr(exactVariant, key);
+        if (val) newAttrs[key] = val;
+      });
+      setSelectedAttrs(newAttrs);
+    } else {
+      // Find any variant matching the new size
       const matchingVariant = list.find((v) => {
         const vSize = getVariantSize(v);
         return vSize && String(vSize).toLowerCase() === sizeName.toLowerCase();
@@ -933,7 +940,7 @@ const ProductDetail = () => {
           const capitalized = vColor.charAt(0).toUpperCase() + vColor.slice(1).toLowerCase();
           setSelectedColor(capitalized);
         }
-        
+
         const newAttrs = {};
         Object.keys(extraAttributes).forEach((key) => {
           const val = getAttr(matchingVariant, key);
@@ -941,7 +948,13 @@ const ProductDetail = () => {
         });
         setSelectedAttrs(newAttrs);
       } else {
-        resetToInitialCombination();
+        setSelectedAttrs({});
+        if (product.color) {
+          const capitalized = product.color.charAt(0).toUpperCase() + product.color.slice(1).toLowerCase();
+          setSelectedColor(capitalized);
+        } else if (dbColors.length > 0) {
+          setSelectedColor(dbColors[0].name);
+        }
       }
     }
   };
@@ -983,7 +996,7 @@ const ProductDetail = () => {
         }
         const sizeVal = getVariantSize(matchingVariant);
         if (sizeVal) setSelectedSize(String(sizeVal).toUpperCase());
-        
+
         const resolvedAttrs = { [attrKey]: attrVal };
         Object.keys(extraAttributes).forEach((key) => {
           if (key !== attrKey) {
@@ -1043,12 +1056,19 @@ const ProductDetail = () => {
   useEffect(() => {
     setMounted(true);
     handleGetProductDetail(id);
+    handleGetCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+  const handleAddToCart = async () => {
+    if (!product) return;
+    const res = await apiAddToCart(product._id, activeVariant?._id, quantity);
+    if (res.success) {
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } else {
+      alert(res.message || "Failed to add to cart");
+    }
   };
 
   const decreaseQty = () => setQuantity((q) => Math.max(1, q - 1));
@@ -1072,12 +1092,18 @@ const ProductDetail = () => {
 
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <button
-            className="pd-nav-icon-btn w-9 h-9 rounded-full flex items-center justify-center border transition-all relative"
+          <Link
+            to="/cart"
+            className="pd-nav-icon-btn w-9 h-9 rounded-full flex items-center justify-center border transition-all relative no-underline"
             style={{ border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.55)" }}
           >
             <CartIcon size={15} />
-          </button>
+            {cartItems.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full text-[9px] text-black font-bold flex items-center justify-center">
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
+          </Link>
           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}>
             <PersonIcon />
           </div>
@@ -1310,11 +1336,10 @@ const ProductDetail = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={isOutOfStock}
-                  className={`flex-1 py-3.5 px-6 flex items-center justify-center gap-2 transition-all ${
-                    isOutOfStock
+                  className={`flex-1 py-3.5 px-6 flex items-center justify-center gap-2 transition-all ${isOutOfStock
                       ? "opacity-50 cursor-not-allowed bg-neutral-800 text-neutral-400 border border-neutral-700"
                       : "pd-gold-btn"
-                  }`}
+                    }`}
                   style={{ minHeight: 48 }}
                 >
                   {isOutOfStock ? (
@@ -1335,11 +1360,10 @@ const ProductDetail = () => {
                 </button>
                 <button
                   disabled={isOutOfStock}
-                  className={`flex-1 py-3.5 px-6 transition-all ${
-                    isOutOfStock
+                  className={`flex-1 py-3.5 px-6 transition-all ${isOutOfStock
                       ? "opacity-50 cursor-not-allowed bg-neutral-900 text-neutral-500 border border-neutral-800"
                       : "pd-ghost-btn"
-                  }`}
+                    }`}
                   style={{ minHeight: 48 }}
                 >
                   Buy Now

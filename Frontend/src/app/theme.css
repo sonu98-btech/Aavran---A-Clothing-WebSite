@@ -672,7 +672,7 @@
 }
 
 [data-theme="light"] .pd-divider {
-  background: rgba(139,105,20,0.12) !important;
+  background: rgba(139, 105, 20, 0.12) !important;
 }
 
 [data-theme="light"] .pd-img-box {
@@ -680,7 +680,7 @@
 }
 
 [data-theme="light"] .pd-thumb-btn {
-  border-color: rgba(139,105,20,0.2) !important;
+  border-color: rgba(139, 105, 20, 0.2) !important;
 }
 
 [data-theme="light"] .pd-thumb-btn.active {
@@ -688,9 +688,9 @@
 }
 
 [data-theme="light"] .pd-badge-new {
-  background: rgba(139,105,20,0.1) !important;
+  background: rgba(139, 105, 20, 0.1) !important;
   color: #8B6914 !important;
-  border-color: rgba(139,105,20,0.28) !important;
+  border-color: rgba(139, 105, 20, 0.28) !important;
 }
 
 [data-theme="light"] .pd-star {
@@ -698,7 +698,7 @@
 }
 
 [data-theme="light"] .pd-tab {
-  color: rgba(28,20,8,0.45) !important;
+  color: rgba(28, 20, 8, 0.45) !important;
 }
 
 [data-theme="light"] .pd-tab:hover {
@@ -711,8 +711,8 @@
 }
 
 [data-theme="light"] .pd-size-btn {
-  border-color: rgba(139,105,20,0.2) !important;
-  color: rgba(28,20,8,0.6) !important;
+  border-color: rgba(139, 105, 20, 0.2) !important;
+  color: rgba(28, 20, 8, 0.6) !important;
 }
 
 [data-theme="light"] .pd-size-btn:hover {
@@ -722,18 +722,18 @@
 
 [data-theme="light"] .pd-size-btn.selected {
   border-color: #8B6914 !important;
-  background: rgba(139,105,20,0.08) !important;
+  background: rgba(139, 105, 20, 0.08) !important;
   color: #8B6914 !important;
 }
 
 [data-theme="light"] .pd-ghost-btn {
-  border-color: rgba(139,105,20,0.3) !important;
+  border-color: rgba(139, 105, 20, 0.3) !important;
   color: #5A4520 !important;
 }
 
 [data-theme="light"] .pd-ghost-btn:hover {
   border-color: #8B6914 !important;
-  background: rgba(139,105,20,0.06) !important;
+  background: rgba(139, 105, 20, 0.06) !important;
   color: #8B6914 !important;
 }
 
@@ -744,16 +744,16 @@
 
 [data-theme="light"] .pd-gold-btn:hover {
   background: #6B5010 !important;
-  box-shadow: 0 8px 28px rgba(139,105,20,0.30) !important;
+  box-shadow: 0 8px 28px rgba(139, 105, 20, 0.30) !important;
 }
 
 [data-theme="light"] .pd-trust-item {
-  border-color: rgba(139,105,20,0.12) !important;
+  border-color: rgba(139, 105, 20, 0.12) !important;
 }
 
 [data-theme="light"] .pd-attr-box {
-  background: rgba(247,244,238,0.9) !important;
-  border-color: rgba(139,105,20,0.12) !important;
+  background: rgba(247, 244, 238, 0.9) !important;
+  border-color: rgba(139, 105, 20, 0.12) !important;
 }
 
 [data-theme="light"] .pd-tab-content {
@@ -774,7 +774,7 @@
 
 [data-theme="light"] .pd-back-btn {
   color: #5A4520 !important;
-  border-color: rgba(139,105,20,0.2) !important;
+  border-color: rgba(139, 105, 20, 0.2) !important;
 }
 
 [data-theme="light"] .pd-back-btn:hover {
@@ -792,13 +792,13 @@
 
 /* Product detail page - header in light mode */
 [data-theme="light"] .shop-header {
-  background: rgba(247,244,238,0.92) !important;
-  border-bottom-color: rgba(139,105,20,0.12) !important;
+  background: rgba(247, 244, 238, 0.92) !important;
+  border-bottom-color: rgba(139, 105, 20, 0.12) !important;
 }
 
 /* Cart / nav icon buttons — light mode visibility fix */
 [data-theme="light"] .pd-nav-icon-btn {
-  border-color: rgba(139,105,20,0.25) !important;
+  border-color: rgba(139, 105, 20, 0.25) !important;
   color: #5A4520 !important;
 }
 

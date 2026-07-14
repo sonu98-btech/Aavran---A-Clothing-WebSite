@@ -336,9 +336,9 @@ const Shop = () => {
           <button className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all">
             <SearchIcon size={15} />
           </button>
-          <button className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all">
+          <Link to="/cart" className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all no-underline">
             <CartIcon size={15} />
-          </button>
+          </Link>
           <div className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer">
             <PersonIcon />
           </div>
