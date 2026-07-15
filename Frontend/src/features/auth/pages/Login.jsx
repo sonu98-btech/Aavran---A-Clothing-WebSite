@@ -307,7 +307,7 @@ const Login = () => {
               style={{ fontFamily: "Cormorant Garamond, Georgia, serif" }}
             >
               Your Style,<br />
-              <span className="shimmer-text font-bold italic">
+              <span className="hm-shimmer font-bold italic">
                 Awaits You
               </span>
             </h1>
@@ -325,7 +325,7 @@ const Login = () => {
               { n: "24/7", l: "Support" },
             ].map(({ n, l }) => (
               <div key={l} className="glass-card rounded-xl p-4 text-center">
-                <p className="shimmer-text text-2xl font-black"
+                <p className="hm-shimmer text-2xl font-black"
                   style={{ fontFamily: "Inter, sans-serif" }}>{n}</p>
                 <p className="text-white/40 text-[10px] mt-1 font-semibold tracking-widest uppercase"
                   style={{ fontFamily: "Inter, sans-serif" }}>{l}</p>
@@ -381,7 +381,7 @@ const Login = () => {
               <h2 className="text-white text-2xl font-bold leading-snug"
                 style={{ fontFamily: "Inter, sans-serif" }}>
                 Sign in to<br />
-                <span className="shimmer-text">Your Account</span>
+                <span className="hm-shimmer">Your Account</span>
               </h2>
               <p className="text-white/35 text-xs mt-1.5 leading-relaxed"
                 style={{ fontFamily: "Inter, sans-serif" }}>

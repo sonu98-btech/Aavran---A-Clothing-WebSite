@@ -168,7 +168,7 @@ const DiamondIcon = ({ size = 14 }) => (
 const Cart = () => {
   const { theme } = useTheme();
   const isLight = theme === "light";
-  
+
   const {
     items,
     loading,
@@ -206,14 +206,14 @@ const Cart = () => {
 
   const getVariantDetails = (item) => {
     if (!item.variant || !item.product?.variants) return null;
-    
+
     const v = item.product.variants.find((variant) => variant._id === item.variant || variant.id === item.variant);
     if (!v) return null;
-    
+
     const details = [];
     if (v.size) details.push(`Size: ${v.size.toUpperCase()}`);
     if (v.color) details.push(`Color: ${v.color.charAt(0).toUpperCase() + v.color.slice(1)}`);
-    
+
     if (v.attributes) {
       let entries = [];
       if (v.attributes instanceof Map) {
@@ -229,7 +229,7 @@ const Cart = () => {
         }
       });
     }
-    
+
     return details.join(" | ");
   };
 
@@ -241,19 +241,19 @@ const Cart = () => {
         if (urls.length > 0) return urls[0];
       }
     }
-    
+
     if (item.product?.images && item.product.images.length > 0) {
       const urls = item.product.images[0].url ? item.product.images[0].url.split(" ~ ") : [];
       if (urls.length > 0) return urls[0];
     }
-    
+
     return "https://images.unsplash.com/photo-1618220179428-22790b461013?w=500&q=80";
   };
 
   return (
     <div className="cart-bg relative min-h-screen w-full overflow-x-hidden flex flex-col justify-between"
       style={{ fontFamily: "Inter, sans-serif", background: "#0a0a0f", color: "#fff" }}>
-      
+
       <CartGlobalStyles />
 
       {/* ── Full-bleed background ── */}
@@ -310,7 +310,7 @@ const Cart = () => {
             AAVRAN
           </span>
         </Link>
-        
+
         <div className="flex items-center gap-2.5">
           {/* Season tag */}
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border border-amber-400/20 bg-amber-400/5">
@@ -323,7 +323,7 @@ const Cart = () => {
 
       {/* Main Content */}
       <main className={`relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 lg:py-12 ${mounted ? "cart-enter" : "opacity-0"}`}>
-        
+
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 mb-6 text-[10px] uppercase tracking-widest text-white/40">
           <Link to="/" className="hover:text-amber-400 transition-colors" style={{ color: "inherit", textDecoration: "none" }}>Home</Link>
@@ -359,7 +359,7 @@ const Cart = () => {
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8 items-start">
-            
+
             {/* Left Column: Cart Items List */}
             <div className="w-full lg:w-[65%] space-y-4">
               {items.map((item) => (
@@ -447,7 +447,7 @@ const Cart = () => {
 
               <div className="glass-card rounded-2xl p-6 sm:p-7 relative overflow-hidden z-10 border-light"
                 style={{ boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}>
-                
+
                 {/* Top gold accent line */}
                 <div className="absolute top-0 left-0 right-0 h-px"
                   style={{ background: "linear-gradient(90deg, transparent 0%, #c9a227 30%, #ecc246 50%, #c9a227 70%, transparent 100%)", animation: "borderGlow 3s ease-in-out infinite" }} />
@@ -492,7 +492,7 @@ const Cart = () => {
                   style={{ background: "linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.3) 50%, transparent 100%)" }} />
               </div>
             </div>
-            
+
           </div>
         )}
       </main>

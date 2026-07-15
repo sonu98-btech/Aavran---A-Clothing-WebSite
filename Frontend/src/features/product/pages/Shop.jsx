@@ -328,7 +328,7 @@ const Shop = () => {
           <div className="w-7 h-7 rounded bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f]">
             <DiamondIcon size={12} />
           </div>
-          <span className="shimmer-text inline-block text-sm font-bold tracking-[0.22em] uppercase">AAVRAN</span>
+          <span className="hm-shimmer inline-block text-sm font-bold tracking-[0.22em] uppercase">AAVRAN</span>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -347,7 +347,7 @@ const Shop = () => {
         <img
           src="/festive_banner.png"
           alt="Women's Collection"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-90 dark:opacity-50 transition-all duration-1000"
+          className=" absolute inset-0 w-full h-full object-cover object-center opacity-90 dark:opacity-50 transition-all duration-1000"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent pointer-events-none" />
 
@@ -357,7 +357,7 @@ const Shop = () => {
             Atelier SS 2026
           </p>
           <h1 className="shop-hero-title text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1] tracking-tight mb-3 text-white" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
-            Women's<br /><span className="shimmer-text inline-block font-semibold italic">Collection</span>
+            Women's<br /><span className="hm-shimmer inline-block font-semibold italic">Collection</span>
           </h1>
           <p className="text-sm text-white/70 max-w-sm mb-8 leading-relaxed">
             Timeless outfits for every occasion.
