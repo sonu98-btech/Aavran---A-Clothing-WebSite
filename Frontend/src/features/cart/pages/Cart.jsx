@@ -306,7 +306,7 @@ const Cart = () => {
             style={{ background: "linear-gradient(135deg, #c9a227, #ecc246)", color: "#0a0a0f" }}>
             <DiamondIcon size={14} />
           </div>
-          <span className="shimmer-text inline-block font-black tracking-[0.22em] uppercase text-sm">
+          <span className="hm-shimmer inline-block font-black tracking-[0.22em] uppercase text-sm">
             AAVRAN
           </span>
         </Link>
