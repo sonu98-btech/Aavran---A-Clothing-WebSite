@@ -269,7 +269,7 @@ const Login = () => {
             style={{ background: "linear-gradient(135deg, #c9a227, #ecc246)", color: "#0a0a0f" }}>
             <DiamondIcon size={14} />
           </div>
-          <span className="text-white font-black tracking-[0.22em] uppercase text-base"
+          <span className="hm-shimmer font-black tracking-[0.22em] uppercase text-base"
             style={{ fontFamily: "Inter, sans-serif" }}>
             AAVRAN
           </span>

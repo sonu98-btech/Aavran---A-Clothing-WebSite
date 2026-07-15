@@ -417,10 +417,10 @@ const Dashboard = () => {
                 <DiamondIcon size={14} />
               </div>
               <div className="flex-1">
-                <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '14px', letterSpacing: '0.18em', textTransform: 'uppercase', color: textPrimary }}>
+                <span className="hm-shimmer" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '14px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                   AAVRAN
                 </span>
-                <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(201,162,39,0.7)', lineHeight: '1.4' }}>
+                <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: textPrimary, lineHeight: '1.4' }}>
                   Seller Portal
                 </p>
               </div>
@@ -578,7 +578,7 @@ const Dashboard = () => {
                 className="text-3xl sm:text-4xl"
                 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', fontWeight: 300, color: textPrimary, margin: 0, lineHeight: 1.1 }}
               >
-                My <span className="shimmer-text" style={{ fontWeight: 700, fontStyle: 'italic' }}>Products</span>
+                My <span className="hm-shimmer" style={{ fontWeight: 700, fontStyle: 'italic' }}>Products</span>
               </h1>
             </div>
 

@@ -282,7 +282,7 @@ const GlobalStyles = () => (
       background: rgba(247,244,238,0.95) !important;
       border-bottom-color: rgba(139,105,20,0.13) !important;
     }
-    [data-theme="light"] .hm-brand-name { color: #1c1408 !important; }
+
     [data-theme="light"] .hm-icon-btn {
       border-color: rgba(139,105,20,0.2) !important; color: #5a4520 !important;
     }
@@ -609,32 +609,17 @@ const Home = () => {
             }}>
               <DiamondIcon size={13} />
             </div>
-            <span className="hm-brand-name" style={{
+            <span className="hm-brand-name hm-shimmer" style={{
               fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 14,
-              letterSpacing: '0.2em', textTransform: 'uppercase', color: '#fff',
+              letterSpacing: '0.2em', textTransform: 'uppercase',
             }}>AAVRAN</span>
-          </div>
-
-          {/* Season badge */}
-          <div className="hm-season-badge" style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '5px 14px', borderRadius: 999,
-            border: '1px solid rgba(201,162,39,0.25)',
-            background: 'rgba(201,162,39,0.08)',
-          }}>
-            <span className="hm-season-dot" style={{
-              width: 6, height: 6, borderRadius: '50%',
-              background: '#c9a227', display: 'block',
-              animation: 'hm-pulse 2.2s ease-in-out infinite',
-            }} />
-            <span className="hm-season-text hm-label">SS 2025 Collection</span>
           </div>
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ThemeToggle />
             <button className="hm-icon-btn" title="Search" aria-label="Search"><SearchIcon /></button>
-            <Link to="/cart" className="hm-icon-btn" title="Cart" aria-label="Cart" style={{ color: 'inherit', display: 'flex', alignItems: 'center' }}><CartIcon /></Link>
+            <Link to="/cart" className="hm-icon-btn" title="Cart" aria-label="Cart" style={{ display: 'flex', alignItems: 'center' }}><CartIcon /></Link>
             <div style={{
               width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
               background: 'linear-gradient(135deg,#c9a227,#ecc246)',
