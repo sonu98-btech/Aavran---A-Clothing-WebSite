@@ -333,9 +333,6 @@ const Shop = () => {
 
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <button className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all">
-            <SearchIcon size={15} />
-          </button>
           <Link to="/cart" className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all no-underline">
             <CartIcon size={15} />
           </Link>
