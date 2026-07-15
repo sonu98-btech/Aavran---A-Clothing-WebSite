@@ -573,6 +573,28 @@ const Home = () => {
         }}>AAVRAN</span>
       </div>
 
+      {/* ════════════════════════════════════════
+          NAVBAR
+      ════════════════════════════════════════ */}
+      <header className="shop-header sticky top-0 z-50 h-16 flex items-center justify-between px-5 sm:px-10 bg-[#F7F4EE]/90 dark:bg-[#0a0a0f]/85 backdrop-blur-md border-b border-[#8b6914]/12 dark:border-white/8 transition-colors">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f]">
+            <DiamondIcon size={12} />
+          </div>
+          <span className="hm-shimmer inline-block text-sm font-bold tracking-[0.22em] uppercase">AAVRAN</span>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <ThemeToggle />
+          <Link to="/cart" className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all no-underline">
+            <CartIcon size={15} />
+          </Link>
+          <div className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer">
+            <PersonIcon />
+          </div>
+        </div>
+      </header>
+
       {/* ── Corner brackets ── */}
       {[
         { style: { top: 22, left: 22 }, lines: [{ w: '100%', h: 1, top: 0, left: 0, dir: '90deg' }, { w: 1, h: '100%', top: 0, left: 0, dir: '180deg' }] },
@@ -590,45 +612,7 @@ const Home = () => {
         </div>
       ))}
 
-      {/* ════════════════════════════════════════
-          NAVBAR
-      ════════════════════════════════════════ */}
-      <nav className="hm-nav" style={{ height: 64 }}>
-        <div style={{
-          height: '100%', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 clamp(14px, 4vw, 52px)',
-        }}>
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <div style={{
-              width: 30, height: 30, borderRadius: 4,
-              background: 'linear-gradient(135deg,#c9a227,#ecc246)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#0a0a0f', flexShrink: 0,
-            }}>
-              <DiamondIcon size={13} />
-            </div>
-            <span className="hm-brand-name hm-shimmer" style={{
-              fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 14,
-              letterSpacing: '0.2em', textTransform: 'uppercase',
-            }}>AAVRAN</span>
-          </div>
 
-          {/* Right actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <ThemeToggle />
-            <button className="hm-icon-btn" title="Search" aria-label="Search"><SearchIcon /></button>
-            <Link to="/cart" className="hm-icon-btn" title="Cart" aria-label="Cart" style={{ display: 'flex', alignItems: 'center' }}><CartIcon /></Link>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg,#c9a227,#ecc246)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#0a0a0f', cursor: 'pointer', marginLeft: 4,
-            }}><PersonIcon /></div>
-          </div>
-        </div>
-      </nav>
 
       {/* ════════════════════════════════════════
           HERO  (split: copy LEFT | image RIGHT)
