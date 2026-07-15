@@ -186,17 +186,48 @@ const Cart = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const calculateSubtotal = () => {
+  const getActualPrice = (item) => {
+    if (item.variant && item.product?.variants) {
+      const v = item.product.variants.find((variant) => variant._id === item.variant || variant.id === item.variant);
+      if (v) {
+        const priceVal = v.price !== undefined && v.price !== null ? v.price : item.product.price;
+        if (typeof priceVal === "number") return priceVal;
+        if (priceVal && typeof priceVal.amount === "number") return priceVal.amount;
+      }
+    }
+    const priceVal = item.product?.price;
+    if (typeof priceVal === "number") return priceVal;
+    if (priceVal && typeof priceVal.amount === "number") return priceVal.amount;
+    return item.price?.amount ?? 0;
+  };
+
+  const calculateStoredSubtotal = () => {
     return items.reduce((acc, item) => {
       const itemPrice = item.price?.amount ?? 0;
       return acc + itemPrice * item.quantity;
     }, 0);
   };
 
-  const subtotal = calculateSubtotal();
+  const calculateActualSubtotal = () => {
+    return items.reduce((acc, item) => {
+      const actual = getActualPrice(item);
+      return acc + actual * item.quantity;
+    }, 0);
+  };
+
+  const storedSubtotal = calculateStoredSubtotal();
+  const actualSubtotal = calculateActualSubtotal();
+
+  const subtotal = actualSubtotal;
   const shipping = subtotal > 1499 ? 0 : 99;
   const tax = Math.round(subtotal * 0.05); // 5% estimated GST
   const total = subtotal + shipping + tax;
+
+  const previousShipping = storedSubtotal > 1499 ? 0 : 99;
+  const previousTax = Math.round(storedSubtotal * 0.05);
+  const previousTotal = storedSubtotal + previousShipping + previousTax;
+
+  const hasPriceChanges = storedSubtotal !== actualSubtotal;
 
   const handleQtyChange = async (item, delta) => {
     const newQty = item.quantity + delta;
@@ -397,9 +428,20 @@ const Cart = () => {
                       </div>
 
                       {/* Variant Info */}
-                      <p className="text-white/45 text-[10px] sm:text-[11px] tracking-wide mb-3 uppercase">
+                      <p className="text-white/45 text-[10px] sm:text-[11px] tracking-wide mb-2 uppercase">
                         {getVariantDetails(item) || `Base Product - ${item.product?.color || "N/A"}`}
                       </p>
+
+                      {getActualPrice(item) < (item.price?.amount ?? 0) && (
+                        <div className="text-green-400 text-[10px] sm:text-[11px] font-semibold tracking-wide mb-2">
+                          ✨ Price Dropped! Saved ₹{(((item.price?.amount ?? 0) - getActualPrice(item)) * item.quantity).toLocaleString("en-IN")}
+                        </div>
+                      )}
+                      {getActualPrice(item) > (item.price?.amount ?? 0) && (
+                        <div className="text-red-400 text-[10px] sm:text-[11px] font-semibold tracking-wide mb-2">
+                          ⚠️ Price increased by ₹{((getActualPrice(item) - (item.price?.amount ?? 0)) * item.quantity).toLocaleString("en-IN")}!
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between mt-auto">
@@ -424,9 +466,22 @@ const Cart = () => {
                       </div>
 
                       {/* Price */}
-                      <span className="font-bold text-sm sm:text-base" style={{ color: "#c9a227" }}>
-                        ₹{(item.price?.amount * item.quantity).toLocaleString("en-IN")}
-                      </span>
+                      <div className="flex flex-col items-end">
+                        {getActualPrice(item) !== (item.price?.amount ?? 0) ? (
+                          <>
+                            <span className="line-through text-white/30 text-[10px] sm:text-xs">
+                              ₹{((item.price?.amount ?? 0) * item.quantity).toLocaleString("en-IN")}
+                            </span>
+                            <span className="font-bold text-sm sm:text-base" style={{ color: getActualPrice(item) < (item.price?.amount ?? 0) ? "#22c55e" : "#ef4444" }}>
+                              ₹{(getActualPrice(item) * item.quantity).toLocaleString("en-IN")}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-bold text-sm sm:text-base" style={{ color: "#c9a227" }}>
+                            ₹{((item.price?.amount ?? 0) * item.quantity).toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -456,25 +511,80 @@ const Cart = () => {
                   Order Summary
                 </h2>
 
+                {hasPriceChanges && (
+                  <div className="mb-4 p-3 rounded-lg text-[11px] leading-relaxed border"
+                    style={{
+                      background: actualSubtotal < storedSubtotal ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
+                      borderColor: actualSubtotal < storedSubtotal ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
+                      color: actualSubtotal < storedSubtotal ? "#4ade80" : "#f87171"
+                    }}>
+                    {actualSubtotal < storedSubtotal ? (
+                      <div>
+                        <strong>✨ Cart Price Dropped!</strong> You are saving a total of <strong>₹{(storedSubtotal - actualSubtotal).toLocaleString("en-IN")}</strong> on this collection.
+                      </div>
+                    ) : (
+                      <div>
+                        <strong>⚠️ Price Increase Warning!</strong> Some items in your collection have increased in price. Total increased by <strong>₹{(actualSubtotal - storedSubtotal).toLocaleString("en-IN")}</strong>.
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-4 text-xs sm:text-sm text-white/40 mb-6 font-medium">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span>Subtotal</span>
-                    <span className="text-white">₹{subtotal.toLocaleString("en-IN")}</span>
+                    <div className="flex flex-col items-end">
+                      {hasPriceChanges ? (
+                        <>
+                          <span className="line-through text-white/30 text-xs">₹{storedSubtotal.toLocaleString("en-IN")}</span>
+                          <span className="text-white font-bold">₹{actualSubtotal.toLocaleString("en-IN")}</span>
+                        </>
+                      ) : (
+                        <span className="text-white font-bold">₹{subtotal.toLocaleString("en-IN")}</span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span>Shipping</span>
-                    <span className="text-white">{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
+                    <div className="flex flex-col items-end">
+                      {hasPriceChanges && previousShipping !== shipping ? (
+                        <>
+                          <span className="line-through text-white/30 text-xs">{previousShipping === 0 ? "Complimentary" : `₹${previousShipping}`}</span>
+                          <span className="text-white font-bold">{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
+                        </>
+                      ) : (
+                        <span className="text-white font-bold">{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span>Estimated GST (5%)</span>
-                    <span className="text-white">₹{tax.toLocaleString("en-IN")}</span>
+                    <div className="flex flex-col items-end">
+                      {hasPriceChanges && previousTax !== tax ? (
+                        <>
+                          <span className="line-through text-white/30 text-xs">₹{previousTax.toLocaleString("en-IN")}</span>
+                          <span className="text-white font-bold">₹{tax.toLocaleString("en-IN")}</span>
+                        </>
+                      ) : (
+                        <span className="text-white font-bold">₹{tax.toLocaleString("en-IN")}</span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="pt-4 flex justify-between font-bold text-base text-white border-t border-light">
+                  <div className="pt-4 flex justify-between items-center font-bold text-base text-white border-t border-light">
                     <span>Total</span>
-                    <span style={{ color: "#c9a227" }}>₹{total.toLocaleString("en-IN")}</span>
+                    <div className="flex flex-col items-end">
+                      {hasPriceChanges && previousTotal !== total ? (
+                        <>
+                          <span className="line-through text-white/30 text-xs font-normal">₹{previousTotal.toLocaleString("en-IN")}</span>
+                          <span style={{ color: "#c9a227" }}>₹{total.toLocaleString("en-IN")}</span>
+                        </>
+                      ) : (
+                        <span style={{ color: "#c9a227" }}>₹{total.toLocaleString("en-IN")}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

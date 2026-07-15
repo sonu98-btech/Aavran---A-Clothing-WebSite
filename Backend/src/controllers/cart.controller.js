@@ -5,7 +5,7 @@ import productModel from "../models/product.model.js";
 const getPopulatedCart = async (userId) => {
   return await cartModel.findOne({ user: userId }).populate({
     path: "items.product",
-    select: "title images variants color size description"
+    select: "title images variants color size description price"
   });
 };
 
