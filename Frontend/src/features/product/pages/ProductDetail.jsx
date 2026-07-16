@@ -1077,7 +1077,7 @@ const ProductDetail = () => {
         className="shop-header sticky top-0 z-50 h-16 flex items-center justify-between px-5 sm:px-10 backdrop-blur-md border-b transition-colors"
         style={{ background: "rgba(10,10,15,0.85)", borderColor: "rgba(255,255,255,0.08)" }}
       >
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
+        <Link to="/home" className="flex items-center gap-2.5 no-underline">
           <div className="w-7 h-7 rounded flex items-center justify-center" style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f" }}>
             <DiamondIcon size={12} />
           </div>
@@ -1106,7 +1106,7 @@ const ProductDetail = () => {
 
       {/* ══ BREADCRUMB — mobile only ═══════════════════════════ */}
       <div className="md:hidden flex items-center gap-1.5 px-5 py-3 text-[11px] pd-breadcrumb border-b" style={{ borderColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.4)" }}>
-        <Link to="/" style={{ color: "rgba(255,255,255,0.45)" }}>Home</Link>
+        <Link to="/home" style={{ color: "rgba(255,255,255,0.45)" }}>Home</Link>
         <span>/</span>
         <Link to="/shop" style={{ color: "rgba(255,255,255,0.45)" }}>Shop</Link>
         <span>/</span>

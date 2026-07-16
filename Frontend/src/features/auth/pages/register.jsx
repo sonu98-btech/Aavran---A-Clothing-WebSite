@@ -250,7 +250,7 @@ const Register = () => {
       });
       const nextUser = registeredUser || user;
       if (nextUser?.role === "buyer") {
-        navigate("/");
+        navigate("/home");
       } else if (nextUser?.role) {
         navigate("/seller/dashboard");
       }
@@ -329,7 +329,7 @@ const Register = () => {
         {/* Sign In link + Theme toggle */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <ThemeToggle />
-          <a href="/login" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
+          <a href="/" className="text-white/50 hover:text-amber-400 text-xs font-semibold tracking-widest uppercase transition-colors"
             style={{ fontFamily: "Inter, sans-serif" }}>
             Sign In
           </a>
@@ -517,7 +517,7 @@ const Register = () => {
             <p className="mt-5 text-center text-[11px] text-white/30"
               style={{ fontFamily: "Inter, sans-serif" }}>
               Already have an account?{" "}
-              <a href="/login"
+              <a href="/"
                 className="font-bold hover:underline underline-offset-2 transition-colors"
                 style={{ color: "#c9a227" }}>
                 Sign In

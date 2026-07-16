@@ -305,7 +305,7 @@ const CreateProduct = () => {
         {/* Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
-          <a href="/"
+          <a href="/seller/dashboard"
             className="
               flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase
               transition-colors duration-200

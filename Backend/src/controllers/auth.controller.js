@@ -82,7 +82,7 @@ export const googleAuthCallbackController = async (req, res) => {
         res.redirect("http://localhost:5173/seller/dashboard");   
     }
     else{
-        res.redirect("http://localhost:5173/");
+        res.redirect("http://localhost:5173/home");
     }
 }
 

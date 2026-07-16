@@ -206,7 +206,7 @@ const Login = () => {
       });
       const nextUser = loggedUser || user;
       if (nextUser?.role === "buyer") {
-        navigate("/");
+        navigate("/home");
       } else if (nextUser?.role) {
         navigate("/seller/dashboard");
       }

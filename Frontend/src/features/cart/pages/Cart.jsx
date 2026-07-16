@@ -332,7 +332,7 @@ const Cart = () => {
         className="relative sticky top-0 z-50 h-16 flex items-center justify-between px-5 sm:px-8 backdrop-blur-md border-b transition-colors z-20"
         style={{ background: "rgba(10,10,15,0.75)", borderColor: "rgba(255,255,255,0.08)" }}
       >
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
+        <Link to="/home" className="flex items-center gap-2.5 no-underline">
           <div className="w-7 h-7 flex items-center justify-center rounded-sm"
             style={{ background: "linear-gradient(135deg, #c9a227, #ecc246)", color: "#0a0a0f" }}>
             <DiamondIcon size={14} />
@@ -357,7 +357,7 @@ const Cart = () => {
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 mb-6 text-[10px] uppercase tracking-widest text-white/40">
-          <Link to="/" className="hover:text-amber-400 transition-colors" style={{ color: "inherit", textDecoration: "none" }}>Home</Link>
+          <Link to="/home" className="hover:text-amber-400 transition-colors" style={{ color: "inherit", textDecoration: "none" }}>Home</Link>
           <span>/</span>
           <Link to="/shop" className="hover:text-amber-400 transition-colors" style={{ color: "inherit", textDecoration: "none" }}>Shop</Link>
           <span>/</span>
