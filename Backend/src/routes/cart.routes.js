@@ -4,7 +4,8 @@ import {
   getCartController,
   addCartController,
   updateCartItemController,
-  removeCartItemController
+  removeCartItemController,
+  createOrderController
 } from "../controllers/cart.controller.js"
 import { addCartValidation } from "../validator/cart.validator.js"
 
@@ -14,5 +15,6 @@ cartRouter.get("/", autheticateUser, getCartController)
 cartRouter.post("/", autheticateUser, addCartValidation, addCartController)
 cartRouter.put("/", autheticateUser, updateCartItemController)
 cartRouter.delete("/:itemId", autheticateUser, removeCartItemController)
+cartRouter.post("/payment/create/order", autheticateUser, createOrderController)
 
 export default cartRouter

@@ -1069,7 +1069,40 @@ const ProductDetail = () => {
   const increaseQty = () => setQuantity((q) => Math.min(10, q + 1));
 
   return (
-    <div className="pd-page-bg min-h-screen transition-colors duration-300" style={{ fontFamily: "Inter, sans-serif", background: "#0a0a0f", color: "#fff" }}>
+    <div className="hm-page pd-page-bg min-h-screen transition-colors duration-300" style={{ fontFamily: "Inter, sans-serif", background: "#0a0a0f", color: "#fff", position: 'relative', overflowX: 'hidden' }}>
+      
+      {/* ── Fixed bg gradients ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 55% at 15% 28%, rgba(201,162,39,0.055) 0%, transparent 65%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 65% 45% at 85% 72%, rgba(201,162,39,0.04) 0%, transparent 65%)' }} />
+      </div>
+
+      {/* ── Watermark ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden' }}>
+        <span className="hm-watermark" style={{
+          fontFamily: 'Cormorant Garamond, serif',
+          fontSize: 'clamp(72px, 18vw, 22vw)', fontWeight: 900,
+          color: 'rgba(201,162,39,0.025)', letterSpacing: '0.22em',
+          textTransform: 'uppercase', userSelect: 'none',
+        }}>AAVRAN</span>
+      </div>
+
+      {/* ── Corner brackets ── */}
+      {[
+        { style: { top: 22, left: 22 }, lines: [{ w: '100%', h: 1, top: 0, left: 0, dir: '90deg' }, { w: 1, h: '100%', top: 0, left: 0, dir: '180deg' }] },
+        { style: { bottom: 22, right: 22 }, lines: [{ w: '100%', h: 1, bottom: 0, right: 0, dir: '270deg' }, { w: 1, h: '100%', bottom: 0, right: 0, dir: '0deg' }] },
+      ].map((corner, ci) => (
+        <div key={ci} style={{ position: 'fixed', zIndex: 5, width: 48, height: 48, pointerEvents: 'none', ...corner.style }}>
+          {corner.lines.map((l, li) => (
+            <div key={li} className="hm-bracket-line" style={{
+              position: 'absolute', width: l.w, height: l.h,
+              ...(l.top !== undefined ? { top: l.top } : { bottom: l.bottom }),
+              ...(l.left !== undefined ? { left: l.left } : { right: l.right }),
+              background: `linear-gradient(${l.dir}, rgba(201,162,39,0.5), transparent)`,
+            }} />
+          ))}
+        </div>
+      ))}
       <GlobalStyles />
 
       {/* ══ STICKY NAVBAR ══════════════════════════════════════ */}
@@ -1117,7 +1150,7 @@ const ProductDetail = () => {
       {loading && !product ? (
         <SkeletonDetail />
       ) : (
-        <main className={`max-w-6xl mx-auto px-4 sm:px-8 py-8 lg:py-12 ${mounted ? "pd-fade-up" : "opacity-0"}`} style={{ animationDelay: "0.1s" }}>
+        <main className={`max-w-6xl mx-auto px-4 sm:px-8 py-8 lg:py-12 ${mounted ? "pd-fade-up" : "opacity-0"}`} style={{ animationDelay: "0.1s", position: 'relative', zIndex: 1 }}>
 
           {/* Back link */}
           <Link
@@ -1380,7 +1413,7 @@ const ProductDetail = () => {
       {/* ══ FOOTER ════════════════════════════════════════════ */}
       <footer
         className="mt-16 border-t py-6 text-center"
-        style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.25)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase" }}
+        style={{ borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.25)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", position: 'relative', zIndex: 1 }}
       >
         © 2026 Aavran Fashion · All rights reserved
       </footer>

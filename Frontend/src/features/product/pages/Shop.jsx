@@ -320,7 +320,40 @@ const Shop = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F4EE] dark:bg-[#0a0a0f] text-[#1c1408] dark:text-white transition-colors duration-300">
+    <div className="hm-page min-h-screen text-[#1c1408] dark:text-white transition-colors duration-300" style={{ position: 'relative', overflowX: 'hidden', minHeight: '100vh', background: '#0a0a0f' }}>
+
+      {/* ── Fixed bg gradients ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 55% at 15% 28%, rgba(201,162,39,0.055) 0%, transparent 65%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 65% 45% at 85% 72%, rgba(201,162,39,0.04) 0%, transparent 65%)' }} />
+      </div>
+
+      {/* ── Watermark ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden' }}>
+        <span className="hm-watermark" style={{
+          fontFamily: 'Cormorant Garamond, serif',
+          fontSize: 'clamp(72px, 18vw, 22vw)', fontWeight: 900,
+          color: 'rgba(201,162,39,0.025)', letterSpacing: '0.22em',
+          textTransform: 'uppercase', userSelect: 'none',
+        }}>AAVRAN</span>
+      </div>
+
+      {/* ── Corner brackets ── */}
+      {[
+        { style: { top: 22, left: 22 }, lines: [{ w: '100%', h: 1, top: 0, left: 0, dir: '90deg' }, { w: 1, h: '100%', top: 0, left: 0, dir: '180deg' }] },
+        { style: { bottom: 22, right: 22 }, lines: [{ w: '100%', h: 1, bottom: 0, right: 0, dir: '270deg' }, { w: 1, h: '100%', bottom: 0, right: 0, dir: '0deg' }] },
+      ].map((corner, ci) => (
+        <div key={ci} style={{ position: 'fixed', zIndex: 5, width: 48, height: 48, pointerEvents: 'none', ...corner.style }}>
+          {corner.lines.map((l, li) => (
+            <div key={li} className="hm-bracket-line" style={{
+              position: 'absolute', width: l.w, height: l.h,
+              ...(l.top !== undefined ? { top: l.top } : { bottom: l.bottom }),
+              ...(l.left !== undefined ? { left: l.left } : { right: l.right }),
+              background: `linear-gradient(${l.dir}, rgba(201,162,39,0.5), transparent)`,
+            }} />
+          ))}
+        </div>
+      ))}
 
       {/* ══ STICKY NAVBAR ══════════════════════════════════════ */}
       <header className="shop-header sticky top-0 z-50 h-16 flex items-center justify-between px-5 sm:px-10 bg-[#F7F4EE]/90 dark:bg-[#0a0a0f]/85 backdrop-blur-md border-b border-[#8b6914]/12 dark:border-white/8 transition-colors">
@@ -369,7 +402,7 @@ const Shop = () => {
       </section>
 
       {/* ══ MAIN LAYOUT: sidebar + grid ════════════════════════ */}
-      <div ref={productsRef} className="max-w-[1440px] mx-auto flex gap-0">
+      <div ref={productsRef} className="max-w-[1440px] mx-auto flex gap-0" style={{ position: 'relative', zIndex: 1 }}>
 
         {/* ─ Desktop sidebar ─ */}
         <aside className="shop-sidebar hidden lg:block w-56 xl:w-64 flex-shrink-0 px-6 xl:px-8 py-8 border-r border-[#8b6914]/10 dark:border-white/8 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto">
@@ -492,7 +525,7 @@ const Shop = () => {
       </div>
 
       {/* ══ FOOTER ════════════════════════════════════════════ */}
-      <footer className="mt-16 border-t border-[#8b6914]/10 dark:border-white/8 py-6 text-center text-[10px] tracking-[0.22em] uppercase text-[#1c1408]/35 dark:text-white/30">
+      <footer className="mt-16 border-t border-[#8b6914]/10 dark:border-white/8 py-6 text-center text-[10px] tracking-[0.22em] uppercase text-[#1c1408]/35 dark:text-white/30" style={{ position: 'relative', zIndex: 1 }}>
         © 2026 Aavran Fashion · All rights reserved
       </footer>
     </div>

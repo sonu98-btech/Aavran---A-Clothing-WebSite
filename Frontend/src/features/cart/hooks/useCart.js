@@ -1,5 +1,5 @@
 import { setCartItems, setLoading, setError, clearCartItem } from "../state/cart.slice";
-import { fetchCart, addCart, updateCartItem, removeCartItem } from "../services/cart.api";
+import { fetchCart, addCart, updateCartItem, removeCartItem,createCartOrder } from "../services/cart.api";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useCart = () => {
@@ -66,6 +66,11 @@ export const useCart = () => {
         }
     };
 
+     const handleCreateCartOrder = async () =>{
+        const data = await createCartOrder();
+        return data.order;
+    }
+
     const handleClearCart = () => {
         dispatch(clearCartItem());
     };
@@ -78,6 +83,8 @@ export const useCart = () => {
         handleAddToCart,
         handleUpdateCartItem,
         handleRemoveCartItem,
-        handleClearCart
+        handleClearCart,
+        handleCreateCartOrder
+        
     };
 };

@@ -1,12 +1,157 @@
+import mongoose from "mongoose";
 import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
+import { createOrder } from "../services/payment.service.js";
 
-// Helper to populate cart items product details
+// Helper to populate cart items using aggregation pipeline
 const getPopulatedCart = async (userId) => {
-  return await cartModel.findOne({ user: userId }).populate({
-    path: "items.product",
-    select: "title images variants color size description price"
-  });
+  const userObjectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+
+  let cart = await cartModel.findOne({ user: userObjectId });
+  if (!cart) {
+    cart = await cartModel.create({ user: userObjectId, items: [] });
+  }
+
+  if (!cart.items || cart.items.length === 0) {
+    return {
+      _id: cart._id,
+      user: cart.user,
+      items: [],
+      subAmount: 0,
+      gst: 0,
+      shipping: 0,
+      total: 0,
+      currency: "INR"
+    };
+  }
+
+  const result = await cartModel.aggregate([
+    {
+      $match: {
+        user: userObjectId
+      }
+    },
+    { $unwind: { path: "$items" } },
+    {
+      $lookup: {
+        from: "products",
+        localField: "items.product",
+        foreignField: "_id",
+        as: "items.product"
+      }
+    },
+    { $unwind: { path: "$items.product" } },
+    {
+      $addFields: {
+        selectedVariant: {
+          $arrayElemAt: [
+            {
+              $filter: {
+                input: "$items.product.variants",
+                as: "variant",
+                cond: {
+                  $eq: [
+                    "$$variant._id",
+                    "$items.variant"
+                  ]
+                }
+              }
+            },
+            0
+          ]
+        }
+      }
+    },
+    {
+      $addFields: {
+        unitPrice: {
+          $cond: {
+            if: { $eq: ["$items.variant", null] },
+            then: "$items.product.price.amount",
+            else: "$selectedVariant.price"
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        itemPrice: {
+          $multiply: [
+            "$items.quantity",
+            "$unitPrice"
+          ]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$_id",
+        subAmount: { $sum: "$itemPrice" },
+        currency: {
+          $first: "$items.product.price.currency"
+        },
+        items: {
+          $push: {
+            _id: "$items._id",
+            product: "$items.product",
+            variant: "$items.variant",
+            quantity: "$items.quantity",
+            price: "$items.price",
+            unitPrice: "$unitPrice",
+            itemPrice: "$itemPrice"
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        gst: {
+          $round: [
+            { $multiply: ["$subAmount", 0.18] },
+            0
+          ]
+        },
+        shipping: {
+          $cond: {
+            if: { $lt: ["$subAmount", 1400] },
+            then: 99,
+            else: 0
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        total: {
+          $round: [
+            {
+              $add: [
+                "$subAmount",
+                "$gst",
+                "$shipping"
+              ]
+            },
+            0
+          ]
+        }
+      }
+    }
+  ], { maxTimeMS: 60000, allowDiskUse: true });
+
+  if (result.length > 0) {
+    return result[0];
+  }
+
+  return {
+    _id: cart._id,
+    user: cart.user,
+    items: [],
+    subAmount: 0,
+    gst: 0,
+    shipping: 0,
+    total: 0,
+    currency: "INR"
+  };
 };
 
 export const getCartController = async (req, res) => {
@@ -230,3 +375,12 @@ export const removeCartItemController = async (req, res) => {
     });
   }
 };
+
+export const createOrderController = async (req, res) => {
+  const cart = await getPopulatedCart(req.user._id);
+  const order = await createOrder({ amount: cart.total, currency: cart.currency });
+  return res.status(200).json({
+    success: true,
+    order
+  });
+}

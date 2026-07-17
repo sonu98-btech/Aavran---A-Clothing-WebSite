@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { useCart } from "../hooks/useCart";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
 import { useTheme } from "../../../app/ThemeContext";
+import { useRazorpay} from "react-razorpay";
+import { useSelector } from "react-redux";
 
 /* ─── Global Styles — Faithful to Login Page Style ─── */
 const CartGlobalStyles = () => (
@@ -175,9 +177,10 @@ const Cart = () => {
     error,
     handleGetCart,
     handleUpdateCartItem,
-    handleRemoveCartItem
+    handleCreateCartOrder,
+    handleRemoveCartItem,
   } = useCart();
-
+  const { isLoading, Razorpay } = useRazorpay();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -220,11 +223,11 @@ const Cart = () => {
 
   const subtotal = actualSubtotal;
   const shipping = subtotal > 1499 ? 0 : 99;
-  const tax = Math.round(subtotal * 0.05); // 5% estimated GST
+  const tax = Math.round(subtotal * 0.18); // 18% estimated GST
   const total = subtotal + shipping + tax;
 
   const previousShipping = storedSubtotal > 1499 ? 0 : 99;
-  const previousTax = Math.round(storedSubtotal * 0.05);
+  const previousTax = Math.round(storedSubtotal * 0.18);
   const previousTotal = storedSubtotal + previousShipping + previousTax;
 
   const hasPriceChanges = storedSubtotal !== actualSubtotal;
@@ -280,6 +283,35 @@ const Cart = () => {
 
     return "https://images.unsplash.com/photo-1618220179428-22790b461013?w=500&q=80";
   };
+  const user = useSelector((state) => state.auth.user);
+  const handleCheckout = async () => {
+    const order  = await handleCreateCartOrder();
+    console.log(order)
+    const options = {
+      key: "rzp_test_TESAUuPjzFlnoC",
+      amount: order.amount, // Amount in paise
+      currency: order.currency,
+      name:  "AAVRAN",
+      description: "Test Transaction",
+      order_id: order.id, // Generate order_id on server
+      handler: (response) => {
+        console.log(response);
+        alert("Payment Successful!");
+      },
+      prefill: {
+        name: user?.fullname || "John Doe",
+        email: user?.email || "john.doe@example.com",
+        contact: user?.contact || "9999999999",
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const razorpayInstance  = new Razorpay(options);
+    razorpayInstance.open();
+
+  }
 
   return (
     <div className="cart-bg relative min-h-screen w-full overflow-x-hidden flex flex-col justify-between"
@@ -560,7 +592,7 @@ const Cart = () => {
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span>Estimated GST (5%)</span>
+                    <span>Estimated GST (18%)</span>
                     <div className="flex flex-col items-end">
                       {hasPriceChanges && previousTax !== tax ? (
                         <>
@@ -589,7 +621,7 @@ const Cart = () => {
                 </div>
 
                 {/* Checkout CTA Button */}
-                <button className="gold-btn w-full py-3.5 px-6 rounded-lg text-xs font-black flex items-center justify-center gap-2 cursor-pointer focus:outline-none">
+                <button onClick={handleCheckout} className="gold-btn w-full py-3.5 px-6 rounded-lg text-xs font-black flex items-center justify-center gap-2 cursor-pointer focus:outline-none">
                   Proceed to Checkout
                 </button>
 
