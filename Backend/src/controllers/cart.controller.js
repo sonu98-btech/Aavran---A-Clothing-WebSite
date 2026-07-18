@@ -3,6 +3,8 @@ import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
 import { createOrder } from "../services/payment.service.js";
 import paymentModel from "../models/payment.model.js";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
+import { config } from "dotenv";
 
 // Helper to populate cart items using aggregation pipeline
 const getPopulatedCart = async (userId) => {
@@ -403,15 +405,7 @@ export const createOrderController = async (req, res) => {
         variantId: item.variant || null,
         quantity: item.quantity,
         price: item.price,
-        images: item.product.images.map(img=>{
-          return {
-            url: img.url
-          }
-        })|| item.variant.images.map(img=>{
-          return {
-            url: img.url
-          }
-        })
+        images: item.variant ? item.variant.images.map(img=>({ url: img.url })) : item.product.images.map(img=>({ url: img.url }))
       }
     })
 
@@ -420,4 +414,49 @@ export const createOrderController = async (req, res) => {
     success: true,
     order
   });
+}
+
+export const verifyOrderController = async (req, res) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const payment = await paymentModel.findOne({ "razorpay.orderId": razorpay_order_id,status: "pending"});
+    if(!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment not found"
+      });
+    }
+    const isPaymentValid = validatePaymentVerification({ orderId: razorpay_order_id, paymentId: razorpay_payment_id, signature: razorpay_signature }, config.RAZORPAY_KEY_SECRET);
+    if(!isPaymentValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment verification failed"
+      });
+    }
+    payment.razorpay.paymentId = razorpay_payment_id;
+    payment.razorpay.signature = razorpay_signature;
+    payment.status = "completed";
+    await payment.save();
+    // Update product and variant stock after successful payment
+    for (const item of payment.orderItems) {
+      const product = await productModel.findById(item.productId);
+      if (!product) {
+        continue; // Skip if product not found
+      }
+      if (item.variantId) {
+        const variant = product.variants.id(item.variantId);
+        if (variant) {
+          variant.stock -= item.quantity;
+        }
+      } else {
+        product.stock -= item.quantity;
+      }
+      await product.save();
+    }
+    // Clear the cart after successful payment
+    await cartModel.findOneAndUpdate({ user: req.user._id }, { items: [] });
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified and order completed"
+    });
+
 }
