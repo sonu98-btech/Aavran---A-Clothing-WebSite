@@ -11,6 +11,7 @@ import SellerProductDetails from "../features/product/pages/SellerProductDetails
 import Cart from "../features/cart/pages/Cart.jsx"
 import Address from "../features/address/pages/Address.jsx"
 import CheckOut from "../features/address/pages/CheckOut.jsx"
+import OrderSuccess from "../features/address/pages/OrderSuccess.jsx"
 
 export const routes = createBrowserRouter(
     [
@@ -49,6 +50,10 @@ export const routes = createBrowserRouter(
         {
             path: "/address",
             element: <Protected role="buyer"><Address /></Protected>
+        },
+        {
+            path: "/order/success",
+            element: <Protected role="buyer"><OrderSuccess /></Protected>
         },
         {
             path: "/seller",

@@ -4,11 +4,12 @@ import productModel from "../models/product.model.js";
 import { createOrder } from "../services/payment.service.js";
 import paymentModel from "../models/payment.model.js";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
-import { config } from "dotenv";
+import { config } from "../config/config.js";
 
 // Helper to populate cart items using aggregation pipeline
 const getPopulatedCart = async (userId) => {
-  const userObjectId = typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
+  const userObjectId =
+    typeof userId === "string" ? new mongoose.Types.ObjectId(userId) : userId;
 
   let cart = await cartModel.findOne({ user: userObjectId });
   if (!cart) {
@@ -24,122 +25,112 @@ const getPopulatedCart = async (userId) => {
       gst: 0,
       shipping: 0,
       total: 0,
-      currency: "INR"
+      currency: "INR",
     };
   }
 
-  const result = await cartModel.aggregate([
-    {
-      $match: {
-        user: userObjectId
-      }
-    },
-    { $unwind: { path: "$items" } },
-    {
-      $lookup: {
-        from: "products",
-        localField: "items.product",
-        foreignField: "_id",
-        as: "items.product"
-      }
-    },
-    { $unwind: { path: "$items.product" } },
-    {
-      $addFields: {
-        selectedVariant: {
-          $arrayElemAt: [
-            {
-              $filter: {
-                input: "$items.product.variants",
-                as: "variant",
-                cond: {
-                  $eq: [
-                    "$$variant._id",
-                    "$items.variant"
-                  ]
-                }
-              }
-            },
-            0
-          ]
-        }
-      }
-    },
-    {
-      $addFields: {
-        unitPrice: {
-          $cond: {
-            if: { $eq: ["$items.variant", null] },
-            then: "$items.product.price.amount",
-            else: "$selectedVariant.price"
-          }
-        }
-      }
-    },
-    {
-      $addFields: {
-        itemPrice: {
-          $multiply: [
-            "$items.quantity",
-            "$unitPrice"
-          ]
-        }
-      }
-    },
-    {
-      $group: {
-        _id: "$_id",
-        subAmount: { $sum: "$itemPrice" },
-        currency: {
-          $first: "$items.product.price.currency"
+  const result = await cartModel.aggregate(
+    [
+      {
+        $match: {
+          user: userObjectId,
         },
-        items: {
-          $push: {
-            _id: "$items._id",
-            product: "$items.product",
-            variant: "$items.variant",
-            quantity: "$items.quantity",
-            price: "$items.price",
-            unitPrice: "$unitPrice",
-            itemPrice: "$itemPrice"
-          }
-        }
-      }
-    },
-    {
-      $addFields: {
-        gst: {
-          $round: [
-            { $multiply: ["$subAmount", 0.18] },
-            0
-          ]
+      },
+      { $unwind: { path: "$items" } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product",
+          foreignField: "_id",
+          as: "items.product",
         },
-        shipping: {
-          $cond: {
-            if: { $lt: ["$subAmount", 1400] },
-            then: 99,
-            else: 0
-          }
-        }
-      }
-    },
-    {
-      $addFields: {
-        total: {
-          $round: [
-            {
-              $add: [
-                "$subAmount",
-                "$gst",
-                "$shipping"
-              ]
+      },
+      { $unwind: { path: "$items.product" } },
+      {
+        $addFields: {
+          selectedVariant: {
+            $arrayElemAt: [
+              {
+                $filter: {
+                  input: "$items.product.variants",
+                  as: "variant",
+                  cond: {
+                    $eq: ["$$variant._id", "$items.variant"],
+                  },
+                },
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          unitPrice: {
+            $cond: {
+              if: { $eq: ["$items.variant", null] },
+              then: "$items.product.price.amount",
+              else: "$selectedVariant.price",
             },
-            0
-          ]
-        }
-      }
-    }
-  ], { maxTimeMS: 60000, allowDiskUse: true });
+          },
+        },
+      },
+      {
+        $addFields: {
+          itemPrice: {
+            $multiply: ["$items.quantity", "$unitPrice"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          subAmount: { $sum: "$itemPrice" },
+          currency: {
+            $first: "$items.product.price.currency",
+          },
+          items: {
+            $push: {
+              _id: "$items._id",
+              product: "$items.product",
+              variant: "$items.variant",
+              quantity: "$items.quantity",
+              price: "$items.price",
+              unitPrice: "$unitPrice",
+              itemPrice: "$itemPrice",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          gst: {
+            $round: [{ $multiply: ["$subAmount", 0.18] }, 0],
+          },
+          shipping: {
+            $cond: {
+              if: { $lt: ["$subAmount", 1400] },
+              then: 99,
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          total: {
+            $round: [
+              {
+                $add: ["$subAmount", "$gst", "$shipping"],
+              },
+              0,
+            ],
+          },
+        },
+      },
+    ],
+    { maxTimeMS: 60000, allowDiskUse: true },
+  );
 
   if (result.length > 0) {
     return result[0];
@@ -153,7 +144,7 @@ const getPopulatedCart = async (userId) => {
     gst: 0,
     shipping: 0,
     total: 0,
-    currency: "INR"
+    currency: "INR",
   };
 };
 
@@ -166,12 +157,12 @@ export const getCartController = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      cart
+      cart,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -205,19 +196,22 @@ export const addCartController = async (req, res) => {
         });
       }
       availableStock = variant.stock;
-      
-      const priceVal = variant.price !== undefined && variant.price !== null ? variant.price : product.price;
+
+      const priceVal =
+        variant.price !== undefined && variant.price !== null
+          ? variant.price
+          : product.price;
       if (typeof priceVal === "number") {
         selectedPrice = {
           amount: priceVal,
-          currency: product.price?.currency || "INR"
+          currency: product.price?.currency || "INR",
         };
       } else if (priceVal && priceVal.amount !== undefined) {
         selectedPrice = priceVal;
       } else {
         selectedPrice = {
           amount: 0,
-          currency: "INR"
+          currency: "INR",
         };
       }
 
@@ -226,19 +220,19 @@ export const addCartController = async (req, res) => {
       });
     } else {
       availableStock = product.stock;
-      
+
       const priceVal = product.price;
       if (typeof priceVal === "number") {
         selectedPrice = {
           amount: priceVal,
-          currency: "INR"
+          currency: "INR",
         };
       } else if (priceVal && priceVal.amount !== undefined) {
         selectedPrice = priceVal;
       } else {
         selectedPrice = {
           amount: 0,
-          currency: "INR"
+          currency: "INR",
         };
       }
 
@@ -277,12 +271,12 @@ export const addCartController = async (req, res) => {
     return res.status(200).json({
       message: "Item added to cart successfully",
       success: true,
-      cart: populatedCart
+      cart: populatedCart,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -296,7 +290,7 @@ export const updateCartItemController = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "Cart not found"
+        message: "Cart not found",
       });
     }
 
@@ -304,7 +298,7 @@ export const updateCartItemController = async (req, res) => {
     if (!item) {
       return res.status(404).json({
         success: false,
-        message: "Item not found in cart"
+        message: "Item not found in cart",
       });
     }
 
@@ -313,7 +307,7 @@ export const updateCartItemController = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found",
       });
     }
 
@@ -328,7 +322,7 @@ export const updateCartItemController = async (req, res) => {
     if (availableStock < quantity) {
       return res.status(400).json({
         success: false,
-        message: `Only ${availableStock} items in stock`
+        message: `Only ${availableStock} items in stock`,
       });
     }
 
@@ -339,12 +333,12 @@ export const updateCartItemController = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Cart updated",
-      cart: populatedCart
+      cart: populatedCart,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -358,7 +352,7 @@ export const removeCartItemController = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "Cart not found"
+        message: "Cart not found",
       });
     }
 
@@ -369,35 +363,47 @@ export const removeCartItemController = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Item removed from cart",
-      cart: populatedCart
+      cart: populatedCart,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
 
 export const createOrderController = async (req, res) => {
   const cart = await getPopulatedCart(req.user._id);
-  if(!cart || !cart.items || cart.items.length === 0) {
+  if (!cart || !cart.items || cart.items.length === 0) {
     return res.status(400).json({
       success: false,
-      message: "Cart is empty"
+      message: "Cart is empty",
     });
   }
-  const order = await createOrder({ amount: cart.total, currency: cart.currency });
+  const order = await createOrder({
+    amount: cart.total,
+    currency: cart.currency,
+  });
   const payment = await paymentModel.create({
     user: req.user._id,
     price: {
       amount: cart.total,
-      currency: cart.currency
+      currency: cart.currency,
     },
-    razorpay:{
-      orderId: order.id
+    razorpay: {
+      orderId: order.id,
     },
-    orderItems: cart.items.map(item=>{
+    orderItems: cart.items.map((item) => {
+      const selectedVariant = item.variant
+        ? item.product.variants?.find(
+            (variant) => variant._id.toString() === item.variant.toString(),
+          )
+        : null;
+      const itemImages = selectedVariant?.images?.length
+        ? selectedVariant.images
+        : item.product.images || [];
+
       return {
         title: item.product.title,
         description: item.product.description,
@@ -405,58 +411,68 @@ export const createOrderController = async (req, res) => {
         variantId: item.variant || null,
         quantity: item.quantity,
         price: item.price,
-        images: item.variant ? item.variant.images.map(img=>({ url: img.url })) : item.product.images.map(img=>({ url: img.url }))
-      }
-    })
-
-  })
+        images: itemImages.map((img) => ({ url: img.url })),
+      };
+    }),
+  });
   return res.status(200).json({
     success: true,
-    order
+    order,
   });
-}
+};
 
 export const verifyOrderController = async (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const payment = await paymentModel.findOne({ "razorpay.orderId": razorpay_order_id,status: "pending"});
-    if(!payment) {
-      return res.status(404).json({
-        success: false,
-        message: "Payment not found"
-      });
-    }
-    const isPaymentValid = validatePaymentVerification({ orderId: razorpay_order_id, paymentId: razorpay_payment_id, signature: razorpay_signature }, config.RAZORPAY_KEY_SECRET);
-    if(!isPaymentValid) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment verification failed"
-      });
-    }
-    payment.razorpay.paymentId = razorpay_payment_id;
-    payment.razorpay.signature = razorpay_signature;
-    payment.status = "completed";
-    await payment.save();
-    // Update product and variant stock after successful payment
-    for (const item of payment.orderItems) {
-      const product = await productModel.findById(item.productId);
-      if (!product) {
-        continue; // Skip if product not found
-      }
-      if (item.variantId) {
-        const variant = product.variants.id(item.variantId);
-        if (variant) {
-          variant.stock -= item.quantity;
-        }
-      } else {
-        product.stock -= item.quantity;
-      }
-      await product.save();
-    }
-    // Clear the cart after successful payment
-    await cartModel.findOneAndUpdate({ user: req.user._id }, { items: [] });
-    return res.status(200).json({
-      success: true,
-      message: "Payment verified and order completed"
+  console.log("verifyOrderController hit with body:", req.body);
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+  const payment = await paymentModel.findOne({
+    "razorpay.orderId": razorpay_order_id,
+    status: "pending",
+  });
+  if (!payment) {
+    return res.status(404).json({
+      success: false,
+      message: "Payment not found",
     });
-
-}
+  }
+  const isPaymentValid = validatePaymentVerification(
+    {
+      order_id: razorpay_order_id,
+      payment_id: razorpay_payment_id,
+    },
+    razorpay_signature,
+    config.RAZORPAY_KEY_SECRET,
+  );
+  if (!isPaymentValid) {
+    return res.status(400).json({
+      success: false,
+      message: "Payment verification failed",
+    });
+  }
+  payment.razorpay.paymentId = razorpay_payment_id;
+  payment.razorpay.signature = razorpay_signature;
+  payment.status = "success";
+  await payment.save();
+  // Update product and variant stock after successful payment
+  for (const item of payment.orderItems) {
+    const product = await productModel.findById(item.productId);
+    if (!product) {
+      continue; // Skip if product not found
+    }
+    if (item.variantId) {
+      const variant = product.variants.id(item.variantId);
+      if (variant) {
+        variant.stock -= item.quantity;
+      }
+    } else {
+      product.stock -= item.quantity;
+    }
+    await product.save();
+  }
+  // Clear the cart after successful payment
+  await cartModel.findOneAndUpdate({ user: req.user._id }, { items: [] });
+  return res.status(200).json({
+    success: true,
+    message: "Payment verified and order completed",
+  });
+};

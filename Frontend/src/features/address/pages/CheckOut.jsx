@@ -213,7 +213,7 @@ const CheckOut = () => {
   const { theme } = useTheme();
 
   const { handleGetAllAddresses, handleDeleteAddress } = useAddress();
-  const { items, handleGetCart, handleClearCart, handleCreateCartOrder } = useCart();
+  const { items, handleGetCart, handleClearCart, handleCreateCartOrder, handleVerifyCartOrder } = useCart();
   const { isLoading, Razorpay } = useRazorpay();
 
   const user = useSelector((state) => state.auth.user);
@@ -315,14 +315,36 @@ const CheckOut = () => {
           description: "Premium Fashion Purchase",
           order_id: order.id,
           handler: async (response) => {
-            setStatusMessage("Verifying transaction...");
-            // Simulate successful payment capture
-            setOrderSuccess(true);
-            handleClearCart();
-            setStatusMessage("Thank you! Your luxury order has been placed successfully.");
-            setTimeout(() => {
-              navigate("/home");
-            }, 3000);
+            try {
+              setStatusMessage("Verifying transaction...");
+              const success = await handleVerifyCartOrder(
+                response.razorpay_order_id,
+                response.razorpay_payment_id,
+                response.razorpay_signature
+              );
+              if (!success) {
+                throw new Error("Payment verification failed.");
+              }
+              const selectedAddress = addresses.find((a) => a._id === selectedAddrId);
+              setOrderSuccess(true);
+              handleClearCart();
+              setStatusMessage("Thank you! Your luxury order has been placed successfully.");
+              setTimeout(() => {
+                navigate("/order/success", {
+                  state: {
+                    orderId: response.razorpay_order_id,
+                    paymentId: response.razorpay_payment_id,
+                    address: selectedAddress,
+                    cartSummary,
+                    items,
+                    isCod: false,
+                  },
+                });
+              }, 1500);
+            } catch (err) {
+              setErrorMessage(err.response?.data?.message || err.message || "Failed to verify transaction.");
+              setStatusMessage("");
+            }
           },
           prefill: {
             name: selectedAddress?.fullname || user?.fullname || "Customer",
@@ -340,12 +362,22 @@ const CheckOut = () => {
         // Cash On Delivery Simulation
         setStatusMessage("Securing your COD order...");
         await new Promise((resolve) => setTimeout(resolve, 1500));
+        const selectedAddress = addresses.find((a) => a._id === selectedAddrId);
         setOrderSuccess(true);
         handleClearCart();
         setStatusMessage("Thank you! Your Cash on Delivery order has been successfully scheduled.");
         setTimeout(() => {
-          navigate("/home");
-        }, 3000);
+          navigate("/order/success", {
+            state: {
+              orderId: "COD-" + Math.floor(100000 + Math.random() * 900000),
+              paymentId: "CASH_ON_DELIVERY",
+              address: selectedAddress,
+              cartSummary,
+              items,
+              isCod: true,
+            },
+          });
+        }, 1500);
       }
     } catch (err) {
       setErrorMessage(err.message || "An error occurred while placing your order.");

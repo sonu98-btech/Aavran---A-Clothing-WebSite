@@ -13,7 +13,7 @@ export const getAllAddresses = async () => {
     const response = await addressApiInstance.get("/");
     return response.data;
 }
- export const deleteAddress = async (addressId) => {
+export const deleteAddress = async (addressId) => {
     const response = await addressApiInstance.delete(`/delete/${addressId}`);
     return response.data;
 }

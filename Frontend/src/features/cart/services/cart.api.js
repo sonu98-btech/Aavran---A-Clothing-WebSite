@@ -1,8 +1,8 @@
 import axios from "axios"
 
 const cartApiInstance = axios.create({
-    baseURL:"/api/cart",
-    withCredentials:true
+    baseURL: "/api/cart",
+    withCredentials: true
 })
 
 export const fetchCart = async () => {
@@ -10,26 +10,35 @@ export const fetchCart = async () => {
     return response.data
 }
 
-export const addCart = async(productId,variantId,quantity)=>{
-    const response = await cartApiInstance.post("/",{
-        productId,variantId,quantity
+export const addCart = async (productId, variantId, quantity) => {
+    const response = await cartApiInstance.post("/", {
+        productId, variantId, quantity
     })
     return response.data
 }
 
-export const updateCartItem = async(itemId,quantity)=>{
-    const response = await cartApiInstance.put("/",{
-        itemId,quantity
+export const updateCartItem = async (itemId, quantity) => {
+    const response = await cartApiInstance.put("/", {
+        itemId, quantity
     })
     return response.data
 }
 
-export const removeCartItem = async(itemId)=>{
+export const removeCartItem = async (itemId) => {
     const response = await cartApiInstance.delete(`/${itemId}`)
     return response.data
 }
 
-export const createCartOrder = async() =>{
+export const createCartOrder = async () => {
     const response = await cartApiInstance.post("/payment/create/order");
+    return response.data;
+}
+
+export const verifyCartOrder = async (razorpayOrderId, razorpayPaymentId, razorpaySignature) => {
+    const response = await cartApiInstance.post("/payment/verify", {
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: razorpayPaymentId,
+        razorpay_signature: razorpaySignature
+    });
     return response.data;
 }
