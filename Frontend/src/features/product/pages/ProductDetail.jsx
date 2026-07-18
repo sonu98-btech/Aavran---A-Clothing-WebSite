@@ -629,6 +629,7 @@ const ProductDetail = () => {
   const { handleGetProductDetail } = useProduct();
   const product = useSelector((state) => state.product.productDetail);
   const loading = useSelector((state) => state.product.loading);
+  const user = useSelector((state) => state.auth.user);
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -1119,21 +1120,29 @@ const ProductDetail = () => {
 
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <Link
-            to="/cart"
-            className="pd-nav-icon-btn w-9 h-9 rounded-full flex items-center justify-center border transition-all relative no-underline"
-            style={{ border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.55)" }}
-          >
-            <CartIcon size={15} />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full text-[9px] text-black font-bold flex items-center justify-center">
-                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-              </span>
-            )}
-          </Link>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}>
-            <PersonIcon />
-          </div>
+          {user && (
+            <Link
+              to="/cart"
+              className="pd-nav-icon-btn w-9 h-9 rounded-full flex items-center justify-center border transition-all relative no-underline"
+              style={{ border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.55)" }}
+            >
+              <CartIcon size={15} />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full text-[9px] text-black font-bold flex items-center justify-center">
+                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                </span>
+              )}
+            </Link>
+          )}
+          {user ? (
+            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}>
+              <PersonIcon />
+            </div>
+          ) : (
+            <Link to="/login" className="text-xs uppercase font-bold tracking-wider px-3.5 py-1.5 border border-[#8b6914]/30 text-[#8b6914] dark:border-[#c9a227]/30 dark:text-[#c9a227] hover:bg-[#8b6914]/10 dark:hover:bg-[#c9a227]/10 rounded transition-all no-underline">
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 

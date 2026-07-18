@@ -231,6 +231,7 @@ const SkeletonCard = () => (
 const Shop = () => {
   const { handleGetAllProducts } = useProduct()
   const storeProducts = useSelector((state) => state.product.allProducts) || []
+  const user = useSelector((state) => state.auth.user)
 
   const productsRef = useRef(null)
   const scrollToProducts = () => {
@@ -366,12 +367,20 @@ const Shop = () => {
 
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <Link to="/cart" className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all no-underline">
-            <CartIcon size={15} />
-          </Link>
-          <div className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer">
-            <PersonIcon />
-          </div>
+          {user && (
+            <Link to="/cart" className="w-9 h-9 rounded-full flex items-center justify-center border border-[#8b6914]/20 dark:border-white/10 text-[#5a4520] dark:text-white/55 hover:border-[#8b6914] hover:text-[#8b6914] dark:hover:border-[#c9a227] dark:hover:text-[#c9a227] transition-all no-underline">
+              <CartIcon size={15} />
+            </Link>
+          )}
+          {user ? (
+            <div className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer">
+              <PersonIcon />
+            </div>
+          ) : (
+            <Link to="/login" className="text-xs uppercase font-bold tracking-wider px-3.5 py-1.5 border border-[#8b6914]/30 text-[#8b6914] dark:border-[#c9a227]/30 dark:text-[#c9a227] hover:bg-[#8b6914]/10 dark:hover:bg-[#c9a227]/10 rounded transition-all no-underline">
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 
