@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
 import { createOrder } from "../services/payment.service.js";
+import paymentModel from "../models/payment.model.js";
 
 // Helper to populate cart items using aggregation pipeline
 const getPopulatedCart = async (userId) => {
@@ -378,7 +379,43 @@ export const removeCartItemController = async (req, res) => {
 
 export const createOrderController = async (req, res) => {
   const cart = await getPopulatedCart(req.user._id);
+  if(!cart || !cart.items || cart.items.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Cart is empty"
+    });
+  }
   const order = await createOrder({ amount: cart.total, currency: cart.currency });
+  const payment = await paymentModel.create({
+    user: req.user._id,
+    price: {
+      amount: cart.total,
+      currency: cart.currency
+    },
+    razorpay:{
+      orderId: order.id
+    },
+    orderItems: cart.items.map(item=>{
+      return {
+        title: item.product.title,
+        description: item.product.description,
+        productId: item.product._id,
+        variantId: item.variant || null,
+        quantity: item.quantity,
+        price: item.price,
+        images: item.product.images.map(img=>{
+          return {
+            url: img.url
+          }
+        })|| item.variant.images.map(img=>{
+          return {
+            url: img.url
+          }
+        })
+      }
+    })
+
+  })
   return res.status(200).json({
     success: true,
     order

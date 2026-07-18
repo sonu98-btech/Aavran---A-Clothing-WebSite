@@ -199,23 +199,27 @@
    5. FORM ELEMENTS
    ════════════════════════════════════════════════════════════════ */
 
-[data-theme="light"] .glass-input {
+[data-theme="light"] .glass-input,
+[data-theme="light"] .cp-glass-input {
   background: #FDFAF5 !important;
   border: 1px solid #D0C5A8 !important;
   color: #1C1408 !important;
 }
 
-[data-theme="light"] .glass-input::placeholder {
+[data-theme="light"] .glass-input::placeholder,
+[data-theme="light"] .cp-glass-input::placeholder {
   color: #9A8060 !important;
 }
 
-[data-theme="light"] .glass-input:focus {
+[data-theme="light"] .glass-input:focus,
+[data-theme="light"] .cp-glass-input:focus {
   border-color: #8B6914 !important;
   background: rgba(139, 105, 20, 0.04) !important;
   box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.16) !important;
 }
 
-[data-theme="light"] .glass-input option {
+[data-theme="light"] .glass-input option,
+[data-theme="light"] .cp-glass-input option {
   background: #ffffff !important;
   color: #1C1408 !important;
 }

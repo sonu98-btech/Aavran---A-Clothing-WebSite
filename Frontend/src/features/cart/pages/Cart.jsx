@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCart } from "../hooks/useCart";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
 import { useTheme } from "../../../app/ThemeContext";
@@ -284,34 +284,12 @@ const Cart = () => {
     return "https://images.unsplash.com/photo-1618220179428-22790b461013?w=500&q=80";
   };
   const user = useSelector((state) => state.auth.user);
-  const handleCheckout = async () => {
-    const order  = await handleCreateCartOrder();
-    console.log(order)
-    const options = {
-      key: "rzp_test_TESAUuPjzFlnoC",
-      amount: order.amount, // Amount in paise
-      currency: order.currency,
-      name:  "AAVRAN",
-      description: "Test Transaction",
-      order_id: order.id, // Generate order_id on server
-      handler: (response) => {
-        console.log(response);
-        alert("Payment Successful!");
-      },
-      prefill: {
-        name: user?.fullname || "John Doe",
-        email: user?.email || "john.doe@example.com",
-        contact: user?.contact || "9999999999",
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
+  const addresses = useSelector((state) => state.address.addresses);
+  const navigate = useNavigate();
 
-    const razorpayInstance  = new Razorpay(options);
-    razorpayInstance.open();
-
-  }
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <div className="cart-bg relative min-h-screen w-full overflow-x-hidden flex flex-col justify-between"
@@ -319,34 +297,20 @@ const Cart = () => {
 
       <CartGlobalStyles />
 
-      {/* ── Full-bleed background ── */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <img
-          src="/aavran-bg.png"
-          alt=""
-          className="w-full h-full object-cover object-center"
-          style={{ filter: "brightness(0.22) saturate(0.85)" }}
-        />
-        {/* Gradient overlays */}
-        <div className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, rgba(10,10,20,0.95) 0%, rgba(10,10,20,0.6) 50%, rgba(10,10,20,0.92) 100%)" }} />
-        <div className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse 80% 60% at 30% 50%, rgba(201,162,39,0.06) 0%, transparent 70%)" }} />
+      {/* ── Fixed bg gradients (same as Shop.jsx) ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 55% at 15% 28%, rgba(201,162,39,0.055) 0%, transparent 65%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 65% 45% at 85% 72%, rgba(201,162,39,0.04) 0%, transparent 65%)' }} />
       </div>
 
-      {/* ── Decorative watermark ── */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
-        <span
-          className="text-[20vw] font-black tracking-[0.18em] uppercase"
-          style={{
-            fontFamily: "Cormorant Garamond, Georgia, serif",
-            color: "rgba(201,162,39,0.02)",
-            userSelect: "none",
-            letterSpacing: "0.22em",
-          }}
-        >
-          AAVRAN
-        </span>
+      {/* ── Watermark (same as Shop.jsx) ── */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', overflow: 'hidden' }}>
+        <span className="watermark-text" style={{
+          fontFamily: 'Cormorant Garamond, Georgia, serif',
+          fontSize: 'clamp(72px, 18vw, 22vw)', fontWeight: 900,
+          color: 'rgba(201,162,39,0.025)', letterSpacing: '0.22em',
+          textTransform: 'uppercase', userSelect: 'none',
+        }}>AAVRAN</span>
       </div>
 
       {/* ── Corner decorative lines ── */}

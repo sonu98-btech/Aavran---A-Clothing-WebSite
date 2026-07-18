@@ -320,7 +320,7 @@ const Shop = () => {
   }
 
   return (
-    <div className="hm-page min-h-screen text-[#1c1408] dark:text-white transition-colors duration-300" style={{ position: 'relative', overflowX: 'hidden', minHeight: '100vh', background: '#0a0a0f' }}>
+    <div className="hm-page min-h-screen text-[#1c1408] dark:text-white transition-colors duration-300" style={{ position: 'relative', overflowX: 'clip', minHeight: '100vh', background: '#0a0a0f' }}>
 
       {/* ── Fixed bg gradients ── */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
