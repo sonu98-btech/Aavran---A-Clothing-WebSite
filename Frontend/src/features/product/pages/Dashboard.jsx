@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useProduct } from '../hooks/use.product';
 import { useNavigate } from 'react-router';
 import { useTheme } from '../../../app/ThemeContext';
+import AccountDropDown from '../../shared/components/AccountDropDown.jsx';
 
 /* ─── Global Styles (matching Login/Register) ──────────────────────────────── */
 const GlobalStyles = ({ dark }) => (
@@ -327,9 +328,11 @@ const Dashboard = () => {
   const dark = theme === 'dark';
   const { handleGetSellerProducts } = useProduct();
   const sellerProducts = useSelector((state) => state.product.sellerProducts);
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   useEffect(() => { handleGetSellerProducts(); }, []);
 
@@ -557,13 +560,21 @@ const Dashboard = () => {
               </button>
 
               {/* Avatar */}
-              <div style={{
-                width: '34px', height: '34px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c9a227, #ecc246)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginLeft: '4px',
-              }}>
-                <Icon d={ICONS.person} size={16} color="#0a0a0f" />
+              <div className="relative">
+                <div
+                  onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                  style={{
+                    width: '34px', height: '34px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #c9a227, #ecc246)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginLeft: '4px', cursor: 'pointer',
+                  }}
+                >
+                  <Icon d={ICONS.person} size={16} color="#0a0a0f" />
+                </div>
+                {showAccountDropdown && (
+                  <AccountDropDown user={user} onClose={() => setShowAccountDropdown(false)} />
+                )}
               </div>
             </div>
           </header>

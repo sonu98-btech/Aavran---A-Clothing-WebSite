@@ -18,3 +18,8 @@ export const getMe = async()=>{
     const response = await authInstance.get("/")
     return response.data
 }
+
+export const logout = async()=>{
+    const response = await authInstance.post("/logout")
+    return response.data
+}

@@ -3,6 +3,7 @@ import { useProduct } from '../hooks/use.product'
 import { useSelector } from 'react-redux'
 import ThemeToggle from '../../../app/ThemeToggle.jsx'
 import { Link } from 'react-router'
+import AccountDropDown from '../../shared/components/AccountDropDown.jsx'
 
 /* ─── Icon Components ───────────────────────────────────────── */
 const DiamondIcon = ({ size = 14 }) => (
@@ -241,6 +242,7 @@ const Shop = () => {
   const [loading, setLoading] = useState(true)
   const [wishlistedIds, setWishlistedIds] = useState([])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false)
 
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -373,8 +375,16 @@ const Shop = () => {
             </Link>
           )}
           {user ? (
-            <div className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer">
-              <PersonIcon />
+            <div className="relative">
+              <div
+                onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                className="w-8 h-8 rounded-full bg-[#8b6914] dark:bg-gradient-to-br dark:from-[#c9a227] dark:to-[#ecc246] flex items-center justify-center text-white dark:text-[#0a0a0f] cursor-pointer"
+              >
+                <PersonIcon />
+              </div>
+              {showAccountDropdown && (
+                <AccountDropDown user={user} onClose={() => setShowAccountDropdown(false)} />
+              )}
             </div>
           ) : (
             <Link to="/login" className="text-xs uppercase font-bold tracking-wider px-3.5 py-1.5 border border-[#8b6914]/30 text-[#8b6914] dark:border-[#c9a227]/30 dark:text-[#c9a227] hover:bg-[#8b6914]/10 dark:hover:bg-[#c9a227]/10 rounded transition-all no-underline">

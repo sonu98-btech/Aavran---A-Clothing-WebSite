@@ -1,12 +1,13 @@
 import express from 'express';
 import { registerValidator,loginValidator } from '../validator/auth.validator.js';
-import { registerController,loginController,googleAuthCallbackController,getMe} from '../controllers/auth.controller.js';
+import { registerController,loginController,googleAuthCallbackController,getMe,logoutController} from '../controllers/auth.controller.js';
 import passport from 'passport';
 import { autheticateUser } from '../middlewares/auth.middleware.js';
 const authRouter  = express.Router();
 
 authRouter.post("/register",registerValidator, registerController)
 authRouter.post("/login",loginValidator, loginController)
+authRouter.post("/logout", logoutController)
 
 authRouter.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })

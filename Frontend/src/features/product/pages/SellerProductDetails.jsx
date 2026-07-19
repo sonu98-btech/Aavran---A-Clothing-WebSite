@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams, Link, useSearchParams, useNavigate } from "react-router";
 import { useProduct } from "../hooks/use.product";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
+import AccountDropDown from "../../shared/components/AccountDropDown.jsx";
 
 /* ─── Global Styles ─── */
 const GlobalStyles = () => (
@@ -329,11 +330,13 @@ const SellerProductDetails = () => {
     const { handleGetProductDetail, handleAddVariants } = useProduct();
     const product = useSelector((state) => state.product.productDetail);
     const loading = useSelector((state) => state.product.loading);
+    const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
     const [mounted, setMounted] = useState(false);
     const [showAddVariant, setShowAddVariant] = useState(false);
+    const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
     // Variant form states
     const [vPrice, setVPrice] = useState("");
@@ -500,8 +503,17 @@ const SellerProductDetails = () => {
                 </Link>
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                     <ThemeToggle />
-                    <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}>
-                        <PersonIcon />
+                    <div className="relative">
+                        <div
+                            onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                            style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}
+                            className="flex items-center justify-center"
+                        >
+                            <PersonIcon />
+                        </div>
+                        {showAccountDropdown && (
+                            <AccountDropDown user={user} onClose={() => setShowAccountDropdown(false)} />
+                        )}
                     </div>
                 </div>
             </header>

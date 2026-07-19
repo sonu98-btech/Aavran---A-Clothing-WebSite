@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router";
 import { useProduct } from "../hooks/use.product";
 import { useCart } from "../../cart/hooks/useCart";
 import ThemeToggle from "../../../app/ThemeToggle.jsx";
+import AccountDropDown from "../../shared/components/AccountDropDown.jsx";
 import { useTheme } from "../../../app/ThemeContext";
 
 /* ─── Global Styles ─── */
@@ -641,6 +642,7 @@ const ProductDetail = () => {
   const [wishlisted, setWishlisted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   // Derive sizes and colors from actual product variants present in DB
   const { dbSizes, dbColors } = React.useMemo(() => {
@@ -1135,8 +1137,17 @@ const ProductDetail = () => {
             </Link>
           )}
           {user ? (
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f", cursor: "pointer" }}>
-              <PersonIcon />
+            <div className="relative">
+              <div
+                onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer"
+                style={{ background: "linear-gradient(135deg,#c9a227,#ecc246)", color: "#0a0a0f" }}
+              >
+                <PersonIcon />
+              </div>
+              {showAccountDropdown && (
+                <AccountDropDown user={user} onClose={() => setShowAccountDropdown(false)} />
+              )}
             </div>
           ) : (
             <Link to="/login" className="text-xs uppercase font-bold tracking-wider px-3.5 py-1.5 border border-[#8b6914]/30 text-[#8b6914] dark:border-[#c9a227]/30 dark:text-[#c9a227] hover:bg-[#8b6914]/10 dark:hover:bg-[#c9a227]/10 rounded transition-all no-underline">
